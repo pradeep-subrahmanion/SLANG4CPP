@@ -1,0 +1,22 @@
+BUILD
+-----
+Make sure gcc and llvm are installed . Check commands 'gcc' and 'llc'.
+
+Type 'make'
+
+This will generate 'slangcc' executable.
+
+RUN 
+---
+
+slangcc <filename>
+
+This will generate native executable from slang source.
+
+To run ,  type ./<filename>
+
+eg : 
+
+	slangcc test.sl
+	./test
+
