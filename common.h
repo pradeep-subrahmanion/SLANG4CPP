@@ -33,4 +33,22 @@ typedef enum {
    TOKEN_SEMI
 }Token;
 
+typedef enum {
+	TYPE_ILLEGAL,
+	TYPE_NUMERIC,
+	TYPE_BOOL,
+	TYPE_STRING
+}TypeInfo;
+
+class SymbolInfo
+{
+public:
+	std::string symbol_name;
+	TypeInfo type;
+	double double_val;
+	std::string string_val;
+	bool bool_val;
+
+};
+
 #endif
