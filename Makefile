@@ -1,4 +1,4 @@
-all: context symboltable ast 
+all: context symboltable ast ast_statement 
 	#ar -rvs libslang.a  ast.o ast_statement.o lexer.o parser.o codegen.o context.o symboltable.o
 	#g++  slangcc.cc  -L $(PWD) -lslang  -o slangcc `llvm-config --libs core --cppflags` `llvm-config --ldflags`
 

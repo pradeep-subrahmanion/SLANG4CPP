@@ -67,7 +67,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-    
+   Value *codegen();
 };
 
 class BinaryPlus:public Expression
