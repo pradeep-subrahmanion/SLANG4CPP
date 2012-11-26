@@ -9,9 +9,9 @@ class Expression
 {
 
 public:
-   virtual SymbolInfo *evaluate() = 0;
+   virtual SymbolInfo *evaluate(Runtime_Context *ctx) = 0;
 	virtual Value *codegen() = 0;
-	virtual TypeInfo typecheck() = 0;
+	virtual TypeInfo typecheck(Compilation_Context *ctx) = 0;
 	virtual TypeInfo get_type() = 0;
 };
 
@@ -21,8 +21,8 @@ class BooleanConstant: public Expression
 
 public:
 	BooleanConstant(bool val);
-	SymbolInfo *evaluate();
-	TypeInfo typecheck();
+	SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
 };
 
@@ -33,8 +33,8 @@ class NumericConstant : public Expression
 
 public:
 	NumericConstant(double _value);
-	SymbolInfo *evaluate();
-	TypeInfo typecheck();
+	SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
 };
 
@@ -46,8 +46,8 @@ class StringLiteral : public Expression
 
 public:
 	StringLiteral(std::string _value);
-	SymbolInfo *evaluate();
-	TypeInfo typecheck();
+	SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
 };
 
@@ -64,39 +64,90 @@ public:
    Variable(Compilation_Context *ctx, std::string _name, std::string _value);
    Variable(Compilation_Context *ctx, std::string _name, bool _value);
    std::string get_name();
-   SymbolInfo *evaluate();
-	TypeInfo typecheck();
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
     
 };
 
-
-class BinaryExpression : public Expression
+class BinaryPlus:public Expression
 {
-
-   Expression *e1, *e2;
-   Operator op;  
+   Expression *exp1, *exp2;
+   TypeInfo type;
 
 public:
-   BinaryExpression(Expression *_e1, Expression *_e2, Operator _op);
-   ~BinaryExpression();
-   SymbolInfo *evaluate();
-	Value *codegen();
-};
-
-class UnaryExpression : public Expression 
-{
+   BinaryPlus(Expression *e1,Expression *e2);
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
    
-   Expression *e1;
-   Operator op;
-
-public:
-   UnaryExpression(Expression *_e1, Operator op);
-   ~UnaryExpression();
-   SymbolInfo *evaluate();
-   Value *codegen();
 };
 
+class BinaryMinus:public Expression
+{
+   Expression *exp1, *exp2;
+   TypeInfo type;
+
+public:
+   BinaryMinus(Expression *e1,Expression *e2);
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+   
+};
+
+class Mult:public Expression
+{
+   Expression *exp1, *exp2;
+   TypeInfo type;
+
+public:
+   Mult(Expression *e1,Expression *e2);
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+   
+};
+
+class Div:public Expression
+{
+   Expression *exp1, *exp2;
+   TypeInfo type;
+
+public:
+   Div(Expression *e1,Expression *e2);
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+   
+};
+
+class UnaryPlus:public Expression
+{
+   Expression *exp1;
+   TypeInfo type;
+
+public:
+   UnaryPlus(Expression *e1);
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+
+};
+
+
+class UnaryMinus:public Expression
+{
+   Expression *exp1;
+   TypeInfo type;
+
+public:
+   UnaryMinus(Expression *e1);
+   SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+
+};
 
 
 #endif
