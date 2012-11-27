@@ -30,8 +30,14 @@ Lexer::Lexer(string input_str)
    index    = 0;
    length   = input_str.length();
    input_string = input_str;
+
    value_table[0] = new ValueTable(TOKEN_PRINT,"PRINT");
    value_table[1] = new ValueTable(TOKEN_PRINTLN,"PRINTLINE");
+   value_table[2] = new ValueTable(TOKEN_BOOL_FALSE,"FALSE");
+   value_table[3] = new ValueTable(TOKEN_BOOL_TRUE,"TRUE");
+   value_table[4] = new ValueTable(TOKEN_VAR_BOOL,"BOOLEAN");
+   value_table[5] = new ValueTable(TOKEN_VAR_NUMBER,"NUMERIC");
+
 }
 
 Token Lexer::get_token()

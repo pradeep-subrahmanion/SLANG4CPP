@@ -1,12 +1,12 @@
 #include "parser.h"
 
-Expression *Parser::call_expression()
+Expression *Parser::call_expression(Compilation_Context *ctx)
 {
    current_token = get_token();
    return expr();
 }
 
-Expression *Parser::expr()
+Expression *Parser::expr(Compilation_Context *ctx)
 {
    Token l_token;
    Expression *result = term();
@@ -21,7 +21,7 @@ Expression *Parser::expr()
    return result;
 }
 
-Expression *Parser::term()
+Expression *Parser::term(Compilation_Context *ctx)
 {
    Token l_token;
    Expression *result = factor();
@@ -36,7 +36,7 @@ Expression *Parser::term()
    return result;
 }
 
-Expression *Parser::factor()
+Expression *Parser::factor(Compilation_Context *ctx)
 {
    Token l_token;
    Expression *result = NULL;
@@ -66,20 +66,20 @@ Expression *Parser::factor()
    return result;
 }
 
-Token Parser::get_next()
+Token Parser::get_next(Compilation_Context *ctx)
 {
    last_token = current_token;
    current_token = get_token();
    return current_token;
 }
 
-vector<Statement*> Parser::parse()
+vector<Statement*> Parser::parse(Compilation_Context *ctx)
 {
    get_next();
    return statement_list();
 
 }
-vector<Statement*> Parser::statement_list()
+vector<Statement*> Parser::statement_list(Compilation_Context *ctx)
 {
    vector<Statement*> temp;
 
@@ -94,10 +94,16 @@ vector<Statement*> Parser::statement_list()
    return temp;
 }
 
-Statement *Parser::get_statement()
+Statement *Parser::get_statement(Compilation_Context *ctx)
 {
   Statement *st =  NULL;
   switch(current_token) {
+   case TOKEN_VAR_STRING:
+   case TOKEN_VAR_NUMERIC:
+   case TOKEN_VAR_BOOL:
+        st = parse_variabledcl_statement();
+        get_next();
+        return st;
    case TOKEN_PRINT:
         st = parse_print_statement();
         get_next();
@@ -106,6 +112,10 @@ Statement *Parser::get_statement()
          st = parse_printline_statement();
          get_next();
          break;
+   case TOKEN_UNQUOTED_STRING:
+         st = parse_assignment_statement();
+         get_next();
+         return st;
    default:
          std::cout << "Exception in statement" << "\n";
          get_next();
@@ -114,7 +124,7 @@ Statement *Parser::get_statement()
   }
    return st;
 }
-Statement *Parser::parse_print_statement()
+Statement *Parser::parse_print_statement(Compilation_Context *ctx)
 {
    get_next();
    Expression *e = expr();
@@ -126,7 +136,7 @@ Statement *Parser::parse_print_statement()
    PrintStatement *st =  new PrintStatement(e);
    return st;
 }
-Statement *Parser::parse_printline_statement()
+Statement *Parser::parse_printline_statement(Compilation_Context *ctx)
 {
    get_next();
    Expression *e = expr();
@@ -136,5 +146,20 @@ Statement *Parser::parse_printline_statement()
   
    PrintLineStatement *st = new PrintLineStatement(e);
    return st;
+}
+Statement *parse_variabledcl_statement(Compilation_Context *ctx)
+{
+   Token token = current_token;
+   get_next();
+
+   if(current_token == TOKEN_UNQUOTED_STRING) {
+      SymbolInfo *info = new SymbolInfo();
+      info->symbol_name = last_str;
+   }
+
+}
+Statement *parse_assignment_statement(Compilation_Context *ctx)
+{
+
 }
 

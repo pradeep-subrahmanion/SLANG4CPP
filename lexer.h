@@ -15,7 +15,12 @@ class Lexer
 {
 private:
    double grab_number();
-   ValueTable *value_table[2];
+   ValueTable *value_table[7];
+
+protected:
+   Token current_token;
+   Token last_token;
+   string last_string;
 
 public:
    string   input_string;

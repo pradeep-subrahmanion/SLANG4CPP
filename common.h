@@ -30,7 +30,20 @@ typedef enum {
    TOKEN_PRINT,
    TOKEN_PRINTLN,
    TOKEN_UNQUOTED_STRING,
-   TOKEN_SEMI
+   TOKEN_SEMI,
+
+   ///step 4 additions
+   
+   TOKEN_VAR_NUMBER,
+   TOKEN_VAR_STRING,
+   TOKEN_VAR_BOOL,
+   TOKEN_NUMERIC,
+   TOK_COMMENT ,
+   TOKEN_BOOL_TRUE,
+   TOKEN_BOOL_FALSE ,
+   TOKEN_STRING,
+   TOKEN_ASSIGN
+
 }Token;
 
 typedef enum {
