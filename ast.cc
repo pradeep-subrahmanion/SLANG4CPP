@@ -31,7 +31,7 @@ NumericConstant::NumericConstant(double _value)
 {
 	info = new SymbolInfo();
 	info->symbol_name = "";
-	info->type = TYPE_BOOL;
+	info->type = TYPE_NUMERIC;
 	info->double_val = _value;
 }
 
@@ -57,7 +57,7 @@ StringLiteral::StringLiteral(std::string _value)
 {
 	info = new SymbolInfo();
 	info->symbol_name = "";
-	info->type = TYPE_BOOL;
+	info->type = TYPE_STRING;
 	info->string_val = _value;
 }
 

@@ -25,6 +25,14 @@ double Lexer::grab_number()
   return atof(str.c_str());
 }
 
+void skip_to_EOL()
+{
+  while (input_string.at(index)!='\n'){
+    index++;
+  } 
+  return;
+}
+
 Lexer::Lexer(string input_str)
 {
    index    = 0;
@@ -89,6 +97,22 @@ start:
       case ';':
          token = TOKEN_SEMI;
          index++;
+         break;
+     case '/':
+       if(input_string.at(index+1) == '/') {
+         skip_to_EOL();
+         goto start;
+       }
+       else {
+         token = TOKEN_DIV;
+         index++;
+         break;
+       }
+     case '=':
+       token = TOKEN_ASSIGN;
+       index++;
+       break;
+       
          break;
       case '0':
       case '1':
