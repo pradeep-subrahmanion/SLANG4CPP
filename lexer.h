@@ -16,7 +16,7 @@ class Lexer
 private:
    double grab_number();
    ValueTable *value_table[7];
-
+   void skip_to_EOL()
 protected:
    Token current_token;
    Token last_token;

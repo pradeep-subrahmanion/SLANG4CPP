@@ -25,7 +25,7 @@ double Lexer::grab_number()
   return atof(str.c_str());
 }
 
-void skip_to_EOL()
+void Lexer::skip_to_EOL()
 {
   while (input_string.at(index)!='\n'){
     index++;
@@ -99,21 +99,41 @@ start:
          index++;
          break;
      case '/':
-       if(input_string.at(index+1) == '/') {
-         skip_to_EOL();
-         goto start;
-       }
-       else {
-         token = TOKEN_DIV;
-         index++;
-         break;
+         if(input_string.at(index+1) == '/') {
+            skip_to_EOL();
+            goto start;
+         }
+         else {
+           token = TOKEN_DIV;
+           index++;
+           break;
        }
      case '=':
-       token = TOKEN_ASSIGN;
-       index++;
-       break;
-       
+         token = TOKEN_ASSIGN;
+         index++;
          break;
+     case '"':
+        string str = "";
+        index++;
+        char c = input_string.at(index);
+        while(index < length && c != '"') {
+          str = str+c;
+          index ++;
+        }   
+
+        if(index == length) {
+         token = TOKEN_ILLEGAL;
+         return token;
+        }
+      
+        else {
+         index ++;
+         last_string = str;
+         token = TOKEN_STRING;
+         return token;
+        }
+       
+
       case '0':
       case '1':
       case '2':
@@ -130,8 +150,47 @@ start:
       default :
          char c = input_string.at(index);
          string str = "";
+         if(isdigit(c)) {
+          while (index < length && (c == '0' ||
+                  c == '1' || c == '2' ||   c == '3' ||
+                   c == '4' || c == '5' || c == '6' ||
+                            c == '7' ||
+                            c == '8' ||
+                            c == '9'))
+                        {
+                            str += c;
+                            index++;
+                            c = input_string.at(index);
+                        }
 
-         if(isalpha(c)) {
+                        if (c == '.')
+                        {
+                            str = str + ".";
+                            index++;
+                            char c = input_string.at(index);
+                            while (index < length && (c== '0' ||
+                                c == '1' ||
+                                c == '2' ||
+                                c == '3' ||
+                                c == '4' ||
+                                c == '5' ||
+                                c == '6' ||
+                                c == '7' ||
+                                c == '8' ||
+                               c == '9'))
+                            {
+                                str += c;
+                                index++;
+                            }
+
+                        }
+
+                        number = atof(str);
+                        tok = TOKEN_NUMERIC;
+
+         }
+
+         else if(isalpha(c)) {
             str += c;
 
             while(++index < length && isalnum((c=input_string.at(index))) || c == '_' ) {
@@ -148,7 +207,7 @@ start:
                   return t->token;                  
                }
             }
-
+            last_string = str;
             return TOKEN_UNQUOTED_STRING;
          }
          else {
