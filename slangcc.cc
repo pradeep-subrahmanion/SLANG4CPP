@@ -1,5 +1,6 @@
 #include "codegen.h"
 #include	"parser.h"
+#include "context.h"
 
 using namespace std;
 using namespace CodeGen;
@@ -43,23 +44,26 @@ int main(int argc, char **argv)
 		// read program text
 
 		string program_str(buffer);
-		
+		Compilation_Context *cc= new Compilation_Context();
 		// parse , get all statements
 
 		Parser *p = new Parser(program_str);
- 	   vector<Statement *> v = p->parse();
+ 	   vector<Statement *> v = p->parse(cc);
+
+
+      Runtime_Context *rc = new Runtime_Context();
 		
 		// generate top level code
 		
-		CodeGen::generate_top_level_code();
+	//	CodeGen::generate_top_level_code();
 
 		// generate code for all statements
   		
    	for(int i=0;i<v.size();++i) {
       	Statement *st = v.at(i);
-      	st->codegen();
+      	st->execute(rc);
    	}
-
+#if 0
 		// generate return statement
 
 		CodeGen:generate_ret_stmt();	
@@ -90,7 +94,7 @@ int main(int argc, char **argv)
 
 	   delete p;
 		free(buffer);
-
+#endif
 		
 	}
 	return 0;

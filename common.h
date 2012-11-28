@@ -61,6 +61,8 @@ public:
 	double double_val;
 	std::string string_val;
 	bool bool_val;
+   SymbolInfo() {};
+   SymbolInfo(std::string _name) { symbol_name = _name;}
 
 };
 

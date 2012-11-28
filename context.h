@@ -14,6 +14,7 @@ public:
 	void set_symboltable(SymbolTable *_st);
    void add_symbol(SymbolInfo *info);
    void assign_symbol(Variable *var, SymbolInfo *value);
+   SymbolInfo *get_symbol(string name);
 };
 
 class Compilation_Context
@@ -21,11 +22,12 @@ class Compilation_Context
 	SymbolTable *st;
 
 public:
-	Compilation_Context();
+   Compilation_Context();
 	SymbolTable *get_symboltable();
 	void set_symboltable(SymbolTable *_st);
    void add_symbol(SymbolInfo *info);
    void assign_symbol(Variable *var, SymbolInfo *value);
+   SymbolInfo *get_symbol(string name);
 };
 
 #endif

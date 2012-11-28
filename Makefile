@@ -1,6 +1,6 @@
-all: context symboltable ast ast_statement lexer
-	#ar -rvs libslang.a  ast.o ast_statement.o lexer.o parser.o codegen.o context.o symboltable.o
-	#g++  slangcc.cc  -L $(PWD) -lslang  -o slangcc `llvm-config --libs core --cppflags` `llvm-config --ldflags`
+all: context symboltable ast ast_statement lexer parser
+	ar -rvs libslang.a  context.o symboltable.o ast.o ast_statement.o lexer.o parser.o
+	g++  slangcc.cc  -L $(PWD) -lslang  -o slangcc `llvm-config --libs core --cppflags` `llvm-config --ldflags`
 
 codegen:codegen.cc
 	g++ -c codegen.cc -o codegen.o `llvm-config --cxxflags`

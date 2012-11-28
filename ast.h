@@ -10,7 +10,7 @@ class Expression
 
 public:
    virtual SymbolInfo *evaluate(Runtime_Context *ctx) = 0;
-	virtual Value *codegen() = 0;
+	virtual Value *codegen(){};
 	virtual TypeInfo typecheck(Compilation_Context *ctx) = 0;
 	virtual TypeInfo get_type() = 0;
 };
@@ -67,7 +67,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-   Value *codegen();
+   //Value *codegen();
 };
 
 class BinaryPlus:public Expression
@@ -80,6 +80,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
+   //Value *codegen();
    
 };
 
@@ -93,6 +94,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
+   //Value *codegen();
    
 };
 
@@ -106,7 +108,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-   
+   //Value *codegen();
 };
 
 class Div:public Expression
@@ -132,7 +134,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-
+   //Value *codegen();
 };
 
 
@@ -146,7 +148,7 @@ public:
    SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-
+   //Value *codegen();
 };
 
 

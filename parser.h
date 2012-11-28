@@ -6,9 +6,9 @@ class Parser:public Lexer
 {
 
 private:
-   Expression *expr();
-   Expression *term();
-   Expression *factor();
+   Expression *expr(Compilation_Context *ctx);
+   Expression *term(Compilation_Context *ctx);
+   Expression *factor(Compilation_Context *ctx);
 
    vector<Statement*> statement_list(Compilation_Context *ctx);
    Statement *get_statement(Compilation_Context *ctx);

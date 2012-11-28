@@ -106,7 +106,7 @@ Variable::Variable(Compilation_Context *ctx, std::string _name, bool _value)
 {
    SymbolInfo *info = new SymbolInfo();
    info->symbol_name = _name;
-   info->string_val = _value;
+   info->bool_val = _value;
    info->type = TYPE_BOOL;
    ///symbol table add
    ctx->add_symbol(info);
@@ -158,7 +158,7 @@ BinaryPlus::BinaryPlus(Expression *e1,Expression *e2)
 SymbolInfo *BinaryPlus::evaluate(Runtime_Context *ctx)
 {
    SymbolInfo *eval_left = exp1->evaluate(ctx);
-   SymbolInfo *eval_right = exp1->evaluate(ctx);
+   SymbolInfo *eval_right = exp2->evaluate(ctx);
    
    if(eval_left->type == TYPE_STRING && eval_right->type == TYPE_STRING) {
       SymbolInfo *info = new SymbolInfo();
@@ -206,7 +206,7 @@ BinaryMinus::BinaryMinus(Expression *e1,Expression *e2)
 SymbolInfo *BinaryMinus::evaluate(Runtime_Context *ctx)
 {
    SymbolInfo *eval_left = exp1->evaluate(ctx);
-   SymbolInfo *eval_right = exp1->evaluate(ctx);
+   SymbolInfo *eval_right = exp2->evaluate(ctx);
 
   if(eval_left->type == TYPE_NUMERIC && eval_right->type == TYPE_NUMERIC) {
       SymbolInfo *info = new SymbolInfo();
@@ -247,7 +247,7 @@ Mult::Mult(Expression *e1,Expression *e2)
 SymbolInfo *Mult::evaluate(Runtime_Context *ctx)
 {
    SymbolInfo *eval_left = exp1->evaluate(ctx);
-   SymbolInfo *eval_right = exp1->evaluate(ctx);
+   SymbolInfo *eval_right = exp2->evaluate(ctx);
 
   if(eval_left->type == TYPE_NUMERIC && eval_right->type == TYPE_NUMERIC) {
       SymbolInfo *info = new SymbolInfo();
@@ -288,7 +288,7 @@ Div::Div(Expression *e1,Expression *e2)
 SymbolInfo *Div::evaluate(Runtime_Context *ctx)
 {
    SymbolInfo *eval_left = exp1->evaluate(ctx);
-   SymbolInfo *eval_right = exp1->evaluate(ctx);
+   SymbolInfo *eval_right = exp2->evaluate(ctx);
 
   if(eval_left->type == TYPE_NUMERIC && eval_right->type == TYPE_NUMERIC) {
       SymbolInfo *info = new SymbolInfo();

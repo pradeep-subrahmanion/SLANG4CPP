@@ -5,7 +5,7 @@ class Statement
 {
 public:
    virtual SymbolInfo *execute(Runtime_Context *ctx) =0 ;
-	virtual Value* codegen() = 0;
+	Value* codegen(){};
 
 };
 
@@ -18,7 +18,6 @@ public:
    PrintStatement(Expression *_exp);
    ~PrintStatement();
    SymbolInfo *execute(Runtime_Context *ctx);
-	virtual Value* codegen();
 
 };
 
@@ -31,7 +30,6 @@ public:
    PrintLineStatement(Expression *_exp);
    ~PrintLineStatement();
    SymbolInfo * execute(Runtime_Context *ctx);
-	virtual Value* codegen();
 };
 
 class VariableDeclStatement: public Statement
