@@ -96,4 +96,59 @@ SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
+//If Statement
+
+IfStatement::IfStatement(Expression *_exp, vector<Statement *> v1,vector<Statement *> v2 )
+{
+  condition = _exp;
+  if_statements = v1;
+  else_statements = v2;
+}
+
+SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
+{
+  SymbolInfo *info  = condition->evaluate(ctx);
+
+  if(info->type == TYPE_BOOL) {
+
+      vector<Statement *> *statements = &if_statements;
+      if(info->bool_val == false) {
+         statements= &else_statements;
+      }
+
+      for(int i=0;i<(*statements).size();++i) {
+        Statement *st = (*statements).at(i);
+        st->execute(ctx);
+      }
+
+  }
+
+  return NULL;
+}
+
+// While Statement
+
+WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v)
+{
+  condition = _exp;
+  statements = v;
+}
+SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
+{
+
+  SymbolInfo *info  = condition->evaluate(ctx);
+
+  while(info->type == TYPE_BOOL && info->bool_val == true) {
+
+      for(int i=0;i<statements.size();++i) {
+        Statement *st = statements.at(i);
+        st->execute(ctx);
+      }
+
+    info = condition->evaluate(ctx);
+  }
+
+  return NULL;
+}
+
 

@@ -409,6 +409,192 @@ TypeInfo UnaryMinus::get_type()
   return type;
 }
 
+// Relational Operator
+
+RelationalExpression::RelationalExpression(Expression *e1,Expression *e2,RelationalOperator _op)
+{
+  exp1 = e1;
+  exp2 = e2;
+  optr = _op;
+}
+
+SymbolInfo * RelationalExpression::evaluate(Runtime_Context *ctx)
+{
+  SymbolInfo *eval_left = exp1->evaluate(ctx);
+  SymbolInfo *eval_right = exp2->evaluate(ctx);
+
+  SymbolInfo *ret = new SymbolInfo();
+  
+  if(eval_left->type == TYPE_NUMERIC && eval_right->type == TYPE_NUMERIC) {
+    ret->type = TYPE_BOOL;
+    ret->symbol_name = "";
+     
+    if(optr == OPTR_EQUAL) {
+      ret->bool_val = (eval_left->double_val == eval_right->double_val);
+    }
+    else if(optr == OPTR_NEQUAL) {
+      ret->bool_val = (eval_left->double_val != eval_right->double_val);
+    }
+    else if(optr == OPTR_GREATER_THAN) {
+      ret->bool_val = (eval_left->double_val > eval_right->double_val);
+    }
+    else if(optr == OPTR_GREATER_EQUAL) {
+      ret->bool_val = (eval_left->double_val >= eval_right->double_val);
+    }
+    else if(optr == OPTR_LESS_THAN) {
+      ret->bool_val = (eval_left->double_val < eval_right->double_val);
+    }
+    else if(optr == OPTR_LESS_EQUAL) {
+      ret->bool_val = (eval_left->double_val <= eval_right->double_val);
+    }
+ 
+    return ret;
+  }
+
+  else if(eval_left->type == TYPE_STRING && eval_right->type == TYPE_STRING) {
+    ret->type = TYPE_BOOL;
+    ret->symbol_name = "";
+    
+    if(optr == OPTR_EQUAL) {
+      ret->bool_val = (eval_left->string_val.compare(eval_right->string_val) == 0);
+    }
+    else if(optr == OPTR_NEQUAL) {
+      ret->bool_val = (eval_left->string_val.compare(eval_right->string_val) != 0);
+    }
+    else {
+      ret->bool_val = false;
+    }
+    return ret;
+  }
+  else if(eval_left->type == TYPE_BOOL && eval_right->type == TYPE_BOOL) {
+    ret->type = TYPE_BOOL;
+    ret->symbol_name = "";
+    
+    if(optr == OPTR_EQUAL) {
+      ret->bool_val = (eval_left->bool_val == eval_right->bool_val);
+    }
+    else if(optr == OPTR_NEQUAL) {
+      ret->bool_val = (eval_left->bool_val != eval_right->bool_val);
+    }
+    else {
+      ret->bool_val = false;
+    }
+    return ret;
+  }
+
+}
+
+TypeInfo RelationalExpression::typecheck(Compilation_Context *ctx)
+{
+  TypeInfo left_type = exp1->typecheck(ctx);
+  TypeInfo right_type = exp2->typecheck(ctx);
+
+  if(left_type != right_type) {
+    exit_with_message("Wrong type in expression");
+  }
+  else if((left_type == TYPE_STRING ) && (optr != OPTR_EQUAL || optr != OPTR_NEQUAL)) {
+    exit_with_message("Only == and != supported for string type");
+  }
+  else if((left_type == TYPE_BOOL ) && (optr != OPTR_EQUAL || optr != OPTR_NEQUAL)) {
+    exit_with_message("Only == and != supported for bool type");
+  }
+
+  operand_type = left_type;
+  type = TYPE_BOOL;
+  return type;
+}
+
+TypeInfo RelationalExpression::get_type()
+{
+  return type;
+}
+
+// Logical Operator
+
+LogicalExpression::LogicalExpression(Expression *e1,Expression *e2,Token _op)
+{
+  exp1 = e1;
+  exp2 = e2;
+  optr = _op;
+}
+
+SymbolInfo * LogicalExpression::evaluate(Runtime_Context *ctx)
+{
+  SymbolInfo *eval_left = exp1->evaluate(ctx);
+  SymbolInfo *eval_right = exp2->evaluate(ctx);
+
+  SymbolInfo *ret = new SymbolInfo();
+  if(eval_left->type == TYPE_BOOL && eval_right->type == TYPE_BOOL) {
+    ret->type = TYPE_BOOL;
+    ret->symbol_name = "";
+    
+    if(optr == TOKEN_AND) {
+      ret->bool_val = (eval_left->bool_val && eval_right->bool_val);
+    }
+    else if(optr == TOKEN_OR) {
+      ret->bool_val = (eval_left->bool_val || eval_right->bool_val);
+    }
+
+    else {
+      ret->bool_val == TYPE_BOOL;
+    }
+    return ret;
+  }
+
+}
+
+TypeInfo LogicalExpression::typecheck(Compilation_Context *ctx)
+{
+  TypeInfo left_type = exp1->typecheck(ctx);
+  TypeInfo right_type = exp2->typecheck(ctx);
+
+  if(left_type != TYPE_BOOL  || right_type != TYPE_BOOL) {
+    exit_with_message("Wrong Type in expression");
+  }
+
+  type = TYPE_BOOL;
+  return type;
+}
+
+TypeInfo LogicalExpression::get_type()
+{
+  return type;
+}
+
+// Logical NOT
+
+LogicalNot::LogicalNot(Expression *e1)
+{
+  exp = e1;
+}
+
+SymbolInfo *LogicalNot::evaluate(Runtime_Context *ctx)
+{
+  SymbolInfo *val = exp->evaluate(ctx);
+  if(val->type == TYPE_BOOL) {
+    SymbolInfo *info = new SymbolInfo();
+    info->symbol_name = "";
+    info->bool_val = !val->bool_val;
+    return info;
+  }
+
+  return NULL;
+}
+
+TypeInfo LogicalNot::typecheck(Compilation_Context *ctx)
+{
+  TypeInfo info = exp->typecheck(ctx);
+  if(info != TYPE_BOOL) {
+    exit_with_message("Wrong type in expression");
+  }
+  type = TYPE_BOOL;
+  return info;
+}
+
+TypeInfo LogicalNot::get_type()
+{
+  return type;
+}
 
 
 

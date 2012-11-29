@@ -55,5 +55,28 @@ public:
   
 };
 
+class IfStatement : public Statement
+{
+  Expression *condition;
+  vector<Statement *> if_statements;
+  vector<Statement *> else_statements;
+  
+public:
+  IfStatement(Expression *_exp, vector<Statement *> v1,vector<Statement *> v2 );
+  SymbolInfo *execute(Runtime_Context *ctx);
+    
+};
 
+class WhileStatement : public Statement
+{
+
+  Expression *condition;
+  vector<Statement *> statements;
+
+public:
+  WhileStatement(Expression *_exp, vector<Statement *> v);
+  SymbolInfo *execute(Runtime_Context *ctx);
+    
+
+};
 

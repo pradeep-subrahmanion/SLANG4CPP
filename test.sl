@@ -9,7 +9,7 @@ STRING d;
 STRING e;
 STRING f;
 
-e = "deep";
+e = "deep"+"hello";
 d = "pra";
 f = d + e;
 
@@ -22,6 +22,7 @@ h = 5.0;
 
 a = ((b*h) +g)/2.0;
 
-printline -a;
-printline h;
+printline -a+a;
+printline h/2;
 printline c;
+printline f;

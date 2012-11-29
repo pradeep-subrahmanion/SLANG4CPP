@@ -151,5 +151,47 @@ public:
   //Value *codegen();
 };
 
+class RelationalExpression:public Expression
+{
+  Expression *exp1 , *exp2;
+  TypeInfo type , operand_type;
+  RelationalOperator optr;
+
+public:
+  RelationalExpression(Expression *e1,Expression *e2,RelationalOperator _op);
+  SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+  
+};
+
+class LogicalExpression:public Expression
+{
+  Expression *exp1 , *exp2;
+  TypeInfo type;
+  Token optr;
+
+public:
+  LogicalExpression(Expression *e1,Expression *e2,Token _op);
+  SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+  
+};
+
+class LogicalNot:public Expression
+{
+  Expression *exp;
+  TypeInfo type;
+
+public:
+  LogicalNot(Expression *e1);
+  SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+  
+};
+
+
 
 #endif

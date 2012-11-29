@@ -9,6 +9,8 @@ private:
    Expression *expr(Compilation_Context *ctx);
    Expression *term(Compilation_Context *ctx);
    Expression *factor(Compilation_Context *ctx);
+   Expression* bexpr(Compilation_Context *ctx);
+   Expression* lexpr(Compilation_Context *ctx);
 
    vector<Statement*> statement_list(Compilation_Context *ctx);
    Statement *get_statement(Compilation_Context *ctx);
@@ -16,6 +18,8 @@ private:
    Statement *parse_printline_statement(Compilation_Context *ctx);
    Statement *parse_variabledcl_statement(Compilation_Context *ctx);
    Statement *parse_assignment_statement(Compilation_Context *ctx);
+   Statement *parse_if_statement(Compilation_Context *ctx);
+   Statement *parse_while_statement(Compilation_Context *ctx);
 
 protected:
    Token get_next();

@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <vector>
 
-void exit_with_message(const char *err_msg);
 
 typedef enum {
   OPERATOR_ILLEGAL = -1,
@@ -44,7 +43,29 @@ typedef enum {
   TOKEN_BOOL_TRUE,
   TOKEN_BOOL_FALSE ,
   TOKEN_STRING,
-  TOKEN_ASSIGN
+  TOKEN_ASSIGN,
+
+// relational operators
+
+  TOKEN_EQUAL,
+  TOKEN_NEQUAL,
+  TOKEN_GREATER_THAN,
+  TOKEN_GREATER_EQUAL,
+  TOKEN_LESS_THAN,
+  TOKEN_LESS_EQUAL,
+  TOKEN_AND,
+  TOKEN_OR,
+  TOKEN_NOT,
+
+// Control structures
+
+  TOKEN_IF,
+  TOKEN_THEN,
+  TOKEN_ELSE,
+  TOKEN_ENDIF,
+  TOKEN_WHILE,
+  TOKEN_ENDWHILE
+
   
 }Token;
 
@@ -54,6 +75,16 @@ typedef enum {
 	TYPE_BOOL,
 	TYPE_STRING
 }TypeInfo;
+
+typedef enum {
+  OPTR_ILLEGAL,
+  OPTR_EQUAL,
+  OPTR_NEQUAL,
+  OPTR_GREATER_THAN,
+  OPTR_GREATER_EQUAL,
+  OPTR_LESS_THAN,
+  OPTR_LESS_EQUAL
+}RelationalOperator;
 
 class SymbolInfo
 {
@@ -67,5 +98,8 @@ public:
   SymbolInfo(std::string _name) { symbol_name = _name;}
   
 };
+
+void exit_with_message(const char *err_msg);
+RelationalOperator get_relation_operator(Token token);
 
 #endif

@@ -3,6 +3,8 @@
 #include "ast_statement.h"
 using namespace std;
 
+#define KEYWORDS_COUNT 13
+
 class ValueTable
 {
 public:
@@ -15,7 +17,7 @@ class Lexer
 {
 private:
   double grab_number();
-  ValueTable *value_table[7];
+  ValueTable *value_table[KEYWORDS_COUNT];
   void skip_to_EOL();
   
   

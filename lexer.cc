@@ -46,6 +46,12 @@ Lexer::Lexer(string input_str)
   value_table[4] = new ValueTable(TOKEN_VAR_BOOL,"BOOLEAN");
   value_table[5] = new ValueTable(TOKEN_VAR_NUMBER,"NUMERIC");
   value_table[6] = new ValueTable(TOKEN_VAR_STRING,"STRING");
+  value_table[7] = new ValueTable(TOKEN_IF,"IF");
+  value_table[8] = new ValueTable(TOKEN_WHILE,"WHILE");
+  value_table[9] = new ValueTable(TOKEN_ENDWHILE,"WEND");
+  value_table[10] = new ValueTable(TOKEN_ELSE,"ELSE");
+  value_table[11] = new ValueTable(TOKEN_ENDIF,"ENDIF");
+  value_table[12] = new ValueTable(TOKEN_THEN,"THEN");
 }
 
 Token Lexer::get_token()
@@ -90,6 +96,37 @@ start:
       token = TOKEN_CPAREN;
       index++;
       break;
+    case '!':
+      if(input_string.at(index+1) == '=') {
+        token = TOKEN_NEQUAL;
+        index += 2;  
+      }
+      else {
+        token = TOKEN_NOT;
+        index++;
+      }
+      break;
+    case '<':
+      if(input_string.at(index+1) == '=') {
+        token = TOKEN_LESS_EQUAL;
+        index += 2;  
+      }
+      else {
+        token = TOKEN_LESS_THAN;
+        index++;   
+      }
+      break;
+    case '>':
+      if(input_string.at(index+1) == '=') {
+        token = TOKEN_GREATER_EQUAL;
+        index += 2;  
+      }
+      else {
+        token = TOKEN_GREATER_THAN;
+        index++;   
+      }
+      break;
+
     case ';':
       token = TOKEN_SEMI;
       index++;
@@ -103,12 +140,38 @@ start:
         token = TOKEN_DIV;
         index++;
         
-      }
-      
+      }      
       break;
     case '=':
-      token = TOKEN_ASSIGN;
-      index++;
+      if(input_string.at(index+1) == '=') {
+        token = TOKEN_EQUAL;
+        index += 2;  
+      }
+      else {
+        token = TOKEN_ASSIGN;
+        index++;
+      }
+      break;
+    case '&':
+      if(input_string.at(index+1) == '&') {
+        token = TOKEN_AND;
+        index += 2;  
+      }
+      else {
+        token = TOKEN_ILLEGAL;
+        index++;
+      }
+    break;
+    case '|':
+      if(input_string.at(index+1) == '&') {
+        token = TOKEN_OR;
+        index += 2;  
+      }
+      else {
+        token = TOKEN_ILLEGAL;
+        index++;
+      }
+
       break;
     case '"':
       
@@ -189,7 +252,7 @@ start:
         //convert to upper case
         std::transform(str.begin(), str.end(),str.begin(), ::toupper);
         
-        for(int i=0; i<7; ++i) {
+        for(int i=0; i<KEYWORDS_COUNT; ++i) {
           
           if(str.compare(value_table[i]->value)==0) {
             ValueTable *t = value_table[i];
