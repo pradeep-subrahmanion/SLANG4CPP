@@ -2,7 +2,7 @@
 #define CODEGEN_INCLUDED
 
 #include "llvm/DerivedTypes.h"
-#include "llvm/IRBuilder.h"
+#include "llvm/Support/IRBuilder.h"
 #include "llvm/LLVMContext.h"
 #include "llvm/Module.h"
 #include "llvm/Analysis/Verifier.h"
@@ -21,7 +21,7 @@ namespace CodeGen
 	extern LLVMContext & context;
 	extern Module *module;
 	extern IRBuilder<> builder;
-
+  
 	void	generate_top_level_code();
 	void	generate_ret_stmt();
 	void  generate_print_stmt(Value *val);

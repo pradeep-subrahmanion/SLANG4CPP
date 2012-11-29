@@ -8,42 +8,44 @@
 #include <algorithm>
 #include <vector>
 
-typedef enum {
-   OPERATOR_ILLEGAL = -1,
-   OPERATOR_PLUS,
-   OPERATOR_MINUS,
-   OPERATOR_MUL,
-   OPERATOR_DIV
+void exit_with_message(const char *err_msg);
 
+typedef enum {
+  OPERATOR_ILLEGAL = -1,
+  OPERATOR_PLUS,
+  OPERATOR_MINUS,
+  OPERATOR_MUL,
+  OPERATOR_DIV
+  
 }Operator;
 
 typedef enum {
-   TOKEN_ILLEGAL = -1,
-   TOKEN_PLUS,
-   TOKEN_MINUS,
-   TOKEN_MUL,
-   TOKEN_DIV,
-   TOKEN_OPAREN,
-   TOKEN_CPAREN,
-   TOKEN_DOUBLE,
-   TOKEN_NULL,
-   TOKEN_PRINT,
-   TOKEN_PRINTLN,
-   TOKEN_UNQUOTED_STRING,
-   TOKEN_SEMI,
-
-   ///step 4 additions
-   
-   TOKEN_VAR_NUMBER,
-   TOKEN_VAR_STRING,
-   TOKEN_VAR_BOOL,
-   TOKEN_NUMERIC,
-   TOK_COMMENT ,
-   TOKEN_BOOL_TRUE,
-   TOKEN_BOOL_FALSE ,
-   TOKEN_STRING,
-   TOKEN_ASSIGN
-
+  TOKEN_ILLEGAL = -1,
+  TOKEN_PLUS,
+  TOKEN_MINUS,
+  TOKEN_MUL,
+  TOKEN_DIV,
+  TOKEN_OPAREN,
+  TOKEN_CPAREN,
+  TOKEN_DOUBLE,
+  TOKEN_NULL,
+  TOKEN_PRINT,
+  TOKEN_PRINTLN,
+  TOKEN_UNQUOTED_STRING,
+  TOKEN_SEMI,
+  
+  ///step 4 additions
+  
+  TOKEN_VAR_NUMBER,
+  TOKEN_VAR_STRING,
+  TOKEN_VAR_BOOL,
+  TOKEN_NUMERIC,
+  TOK_COMMENT ,
+  TOKEN_BOOL_TRUE,
+  TOKEN_BOOL_FALSE ,
+  TOKEN_STRING,
+  TOKEN_ASSIGN
+  
 }Token;
 
 typedef enum {
@@ -61,9 +63,9 @@ public:
 	double double_val;
 	std::string string_val;
 	bool bool_val;
-   SymbolInfo() {};
-   SymbolInfo(std::string _name) { symbol_name = _name;}
-
+  SymbolInfo() {};
+  SymbolInfo(std::string _name) { symbol_name = _name;}
+  
 };
 
 #endif

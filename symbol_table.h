@@ -11,13 +11,13 @@ using namespace std;
 
 class SymbolTable
 {
-   map<string,SymbolInfo *> table;
-
+  map<string,SymbolInfo *> table;
+  
 public:
-   void add(SymbolInfo *s);
-   SymbolInfo *get(string name);
-   void assign(Variable *var, SymbolInfo *value);
-   void assign(string var, SymbolInfo *value);
+  void add(SymbolInfo *s);
+  SymbolInfo *get(string name);
+  void assign(Variable *var, SymbolInfo *value);
+  void assign(string var, SymbolInfo *value);
 };
 
 #endif
