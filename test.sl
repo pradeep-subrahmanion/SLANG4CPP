@@ -1,5 +1,8 @@
 Numeric a;  
 Numeric b;
+Numeric g;
+Numeric h;
+
 BOOLEAN c;
 
 STRING d;
@@ -8,11 +11,17 @@ STRING f;
 
 e = "deep";
 d = "pra";
-f =  d + e;
+f = d + e;
 
-a = 1.10;
+
+c=true;
+
 b = 3.3333;
-a = a+b;
+g = 2.0;
+h = 5.0;
 
-printline f;
-printline a;
+a = ((b*h) +g)/2.0;
+
+printline -a;
+printline h;
+printline c;
