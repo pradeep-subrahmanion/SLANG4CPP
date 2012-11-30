@@ -18,15 +18,15 @@ using namespace llvm;
 
 namespace CodeGen
 {
-	extern LLVMContext & context;
-	extern Module *module;
-	extern IRBuilder<> builder;
+  extern LLVMContext & context;
+  extern Module *module;
+  extern IRBuilder<> builder;
   
-	void	generate_top_level_code();
-	void	generate_ret_stmt();
-	void  generate_print_stmt(Value *val);
-	void  generate_printline_stmt(Value *val);
-	Value	*generate_global_string_for_double(double d);
+  void	generate_top_level_code();
+  void	generate_ret_stmt();
+  void  generate_print_stmt(Value *val);
+  void  generate_printline_stmt(Value *val);
+  Value	*generate_global_string_for_double(double d);
 }
 
 #endif
