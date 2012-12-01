@@ -30,7 +30,10 @@ void Lexer::skip_to_EOL()
   while (input_string.at(index)!='\n' && index < length){
     index++;
   }
-  //exception
+
+  if(index == length) {
+      exit_with_message("error .");
+  }
 }
 
 Lexer::Lexer(string input_str)
@@ -138,9 +141,9 @@ start:
       }
       else {
         token = TOKEN_DIV;
-        index++;
-        
+        index++;    
       }      
+
       break;
     case '=':
       if(input_string.at(index+1) == '=') {
@@ -163,7 +166,7 @@ start:
       }
     break;
     case '|':
-      if(input_string.at(index+1) == '&') {
+      if(input_string.at(index+1) == '|') {
         token = TOKEN_OR;
         index += 2;  
       }

@@ -492,10 +492,10 @@ TypeInfo RelationalExpression::typecheck(Compilation_Context *ctx)
   if(left_type != right_type) {
     exit_with_message("Wrong type in expression");
   }
-  else if((left_type == TYPE_STRING ) && (optr != OPTR_EQUAL || optr != OPTR_NEQUAL)) {
+  else if((left_type == TYPE_STRING ) && (optr != OPTR_EQUAL && optr != OPTR_NEQUAL)) {
     exit_with_message("Only == and != supported for string type");
   }
-  else if((left_type == TYPE_BOOL ) && (optr != OPTR_EQUAL || optr != OPTR_NEQUAL)) {
+  else if((left_type == TYPE_BOOL ) && (optr != OPTR_EQUAL && optr != OPTR_NEQUAL)) {
     exit_with_message("Only == and != supported for bool type");
   }
 
@@ -573,8 +573,10 @@ SymbolInfo *LogicalNot::evaluate(Runtime_Context *ctx)
   SymbolInfo *val = exp->evaluate(ctx);
   if(val->type == TYPE_BOOL) {
     SymbolInfo *info = new SymbolInfo();
+    info->type = TYPE_BOOL;
     info->symbol_name = "";
     info->bool_val = !val->bool_val;
+
     return info;
   }
 

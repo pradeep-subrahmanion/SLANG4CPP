@@ -106,10 +106,17 @@ Expression *Parser::factor(Compilation_Context *ctx)
                                  current_token == TOKEN_BOOL_TRUE ? true : false);
     current_token = get_token();
   }
+  else if(current_token == TOKEN_NOT) {
+    cout << "NOt....";
+    l_token = current_token;
+    current_token = get_token();
+    result = factor(ctx);
+    result = new LogicalNot(result);
+  }
   
   else if(current_token == TOKEN_OPAREN) {
     current_token = get_token();
-    result = expr(ctx);
+    result = bexpr(ctx);
     if(current_token != TOKEN_CPAREN) {
       exit_with_message("Error : missing closing parenthesis");
     }
@@ -218,7 +225,7 @@ Statement *Parser::get_statement(Compilation_Context *ctx)
 Statement *Parser::parse_print_statement(Compilation_Context *ctx)
 {
   get_next();
-  Expression *e = expr(ctx);
+  Expression *e = bexpr(ctx);
   
   if(current_token != TOKEN_SEMI) {
     exit_with_message("\n; is expected\n");
@@ -229,7 +236,7 @@ Statement *Parser::parse_print_statement(Compilation_Context *ctx)
 Statement *Parser::parse_printline_statement(Compilation_Context *ctx)
 {
   get_next();
-  Expression *e = expr(ctx);
+  Expression *e = bexpr(ctx);
   if(current_token != TOKEN_SEMI) {
     exit_with_message("\n; is expected\n");
   }
@@ -289,7 +296,7 @@ Statement *Parser::parse_assignment_statement(Compilation_Context *ctx)
   }
   
   get_next();
-  Expression *exp = expr(ctx);
+  Expression *exp = bexpr(ctx);
   if(exp->typecheck(ctx) != info->type) {
     exit_with_message("Type Mismatch");
   }

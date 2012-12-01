@@ -9,6 +9,8 @@
 #include <vector>
 
 
+// type to rep operator.
+
 typedef enum {
   OPERATOR_ILLEGAL = -1,
   OPERATOR_PLUS,
@@ -17,6 +19,8 @@ typedef enum {
   OPERATOR_DIV
   
 }Operator;
+
+// type to rep token.
 
 typedef enum {
   TOKEN_ILLEGAL = -1,
@@ -39,7 +43,7 @@ typedef enum {
   TOKEN_VAR_STRING,
   TOKEN_VAR_BOOL,
   TOKEN_NUMERIC,
-  TOK_COMMENT ,
+  TOKEN_COMMENT ,
   TOKEN_BOOL_TRUE,
   TOKEN_BOOL_FALSE ,
   TOKEN_STRING,
@@ -69,12 +73,16 @@ typedef enum {
   
 }Token;
 
+// type to rep supported variable types.
+
 typedef enum {
 	TYPE_ILLEGAL,
 	TYPE_NUMERIC,
 	TYPE_BOOL,
 	TYPE_STRING
 }TypeInfo;
+
+// type to rep relational operators.
 
 typedef enum {
   OPTR_ILLEGAL,
@@ -85,6 +93,9 @@ typedef enum {
   OPTR_LESS_THAN,
   OPTR_LESS_EQUAL
 }RelationalOperator;
+
+
+// Represents symbol.
 
 class SymbolInfo
 {
@@ -99,7 +110,12 @@ public:
   
 };
 
+// Some common functions
+
 void exit_with_message(const char *err_msg);
 RelationalOperator get_relation_operator(Token token);
+
+
+
 
 #endif
