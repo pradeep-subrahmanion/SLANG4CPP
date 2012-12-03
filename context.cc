@@ -1,19 +1,19 @@
 #include "context.h"
-#include "symbol_table.h"
+
 
 // Runtime Context
 
 Runtime_Context::Runtime_Context()
 {
-  st= new SymbolTable();
+  st= new SymbolInfoTable();
 };
 
-SymbolTable *Runtime_Context::get_symboltable()
+SymbolInfoTable *Runtime_Context::get_symboltable()
 {
 	return st;
 }
 
-void Runtime_Context::set_symboltable(SymbolTable *_st)
+void Runtime_Context::set_symboltable(SymbolInfoTable *_st)
 {
 	st= _st;
 }
@@ -36,9 +36,9 @@ SymbolInfo * Runtime_Context::get_symbol(string name)
 
 Compilation_Context::Compilation_Context()
 {
-  st = new SymbolTable();
+  st = new SymbolInfoTable();
 }
-SymbolTable * Compilation_Context::get_symboltable()
+SymbolInfoTable * Compilation_Context::get_symboltable()
 {
 	return st;
 }
@@ -48,7 +48,7 @@ void Compilation_Context::assign_symbol(Variable *var, SymbolInfo *value)
   st->assign(var,value);
 }
 
-void Compilation_Context::set_symboltable(SymbolTable *_st)
+void Compilation_Context::set_symboltable(SymbolInfoTable  *_st)
 {
 	st= _st;
 }

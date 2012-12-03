@@ -1,16 +1,19 @@
-#include "common.h"
-#include "codegen.h"
-#include "context.h"
-
 #ifndef AST_INCLUDED
 #define AST_INCLUDED
+
+class Runtime_Context;
+class Compilation_Context;
+
+#include "common.h"
+#include "codegen.h"
+
 
 class Expression
 {
   
 public:
   virtual SymbolInfo *evaluate(Runtime_Context *ctx) = 0;
-	virtual Value *codegen(){};
+	virtual Value *codegen(Runtime_Context *ctx)=0;
 	virtual TypeInfo typecheck(Compilation_Context *ctx) = 0;
 	virtual TypeInfo get_type() = 0;
 };
@@ -24,6 +27,7 @@ public:
 	SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 class NumericConstant : public Expression
@@ -36,6 +40,7 @@ public:
 	SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 
@@ -49,6 +54,7 @@ public:
 	SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 
@@ -67,7 +73,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  //Value *codegen();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 class BinaryPlus:public Expression
@@ -80,7 +86,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  //Value *codegen();
+  Value *codegen(Runtime_Context *ctx);
   
 };
 
@@ -94,7 +100,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  //Value *codegen();
+  Value *codegen(Runtime_Context *ctx);
   
 };
 
@@ -108,7 +114,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  //Value *codegen();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 class Div:public Expression
@@ -121,7 +127,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  
+  Value *codegen(Runtime_Context *ctx);
 };
 
 class UnaryPlus:public Expression
@@ -134,7 +140,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  //Value *codegen();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 
@@ -148,7 +154,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  //Value *codegen();
+  Value *codegen(Runtime_Context *ctx);
 };
 
 class RelationalExpression:public Expression
@@ -162,7 +168,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  
+  Value *codegen(Runtime_Context *ctx);  
 };
 
 class LogicalExpression:public Expression
@@ -176,7 +182,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  
+  Value *codegen(Runtime_Context *ctx);  
 };
 
 class LogicalNot:public Expression
@@ -189,7 +195,7 @@ public:
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();
-  
+  Value *codegen(Runtime_Context *ctx);  
 };
 
 

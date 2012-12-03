@@ -8,6 +8,17 @@
 #include <algorithm>
 #include <vector>
 
+#include "llvm/DerivedTypes.h"
+#include "llvm/IRBuilder.h"
+#include "llvm/LLVMContext.h"
+#include "llvm/Module.h"
+#include "llvm/Analysis/Verifier.h"
+#include "llvm/Bitcode/ReaderWriter.h"
+#include "llvm/Support/raw_ostream.h"
+
+template <class T> class SymbolTable;
+
+
 
 // type to rep operator.
 
@@ -117,5 +128,7 @@ RelationalOperator get_relation_operator(Token token);
 
 
 
+typedef SymbolTable<SymbolInfo*> SymbolInfoTable;
+typedef SymbolTable<llvm::AllocaInst*> AllocaInstTable;
 
 #endif

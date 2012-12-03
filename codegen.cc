@@ -3,10 +3,10 @@
 namespace CodeGen
 {
   llvm::LLVMContext & context = llvm::getGlobalContext();
-  llvm::Module *module = new llvm::Module("asdf", context);
+  llvm::Module *module = new llvm::Module("main_module", context);
   llvm::IRBuilder<> builder(context);
   
-  void generate_top_level_code()
+  void emit_top_level_code()
   {
     
     llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), false);
@@ -17,12 +17,12 @@ namespace CodeGen
     
   }
   
-  void generate_ret_stmt()
+  void emit_ret_stmt()
   {
     builder.CreateRetVoid();
   }
   
-  void generate_print_stmt(Value *val)
+  void emit_print_stmt(Value *val)
   {
     std::vector<llvm::Type *> putsArgs;
     putsArgs.push_back(builder.getInt8Ty()->getPointerTo());
@@ -32,20 +32,27 @@ namespace CodeGen
     builder.CreateCall(putsFunc, val);
   }
   
-  void generate_printline_stmt(Value *val)
+  void emit_printline_stmt(Value *val)
   {
-    generate_print_stmt(val);
-    generate_print_stmt(builder.CreateGlobalStringPtr("\n"));
+    emit_print_stmt(val);
+    emit_print_stmt(builder.CreateGlobalStringPtr("\n"));
   }
   
-  Value	*generate_global_string_for_double(double d)
+  Value	*emit_global_string_for_double(double d)
   {
     char buffer[32];
     snprintf(buffer, 32, "%g",d);
     Value *val = builder.CreateGlobalStringPtr(buffer);
     return val;
   }
-  
+
+  AllocaInst *emit_entry_block_allocation(Function *TheFunction,
+                                          const std::string &VarName) {
+    IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
+                 TheFunction->getEntryBlock().begin());
+    return TmpB.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
+                           VarName.c_str());
+  }
   
   
 }

@@ -5,6 +5,8 @@
 using namespace std;
 using namespace CodeGen;
 
+#define KInterpreterMode 0
+
 int main(int argc, char **argv)
 {
   
@@ -52,21 +54,27 @@ int main(int argc, char **argv)
     
     
     Runtime_Context *rc = new Runtime_Context();
-    
-    // generate top level code
-    
-    //	CodeGen::generate_top_level_code();
-    
-    // generate code for all statements
-    
+
     for(int i=0;i<v.size();++i) {
       Statement *st = v.at(i);
       st->execute(rc);
     }
-#if 0
+#if 0 
+     //generate top level code
+    
+     emit_top_level_code();
+    
+    // generate code for all statements
+
+
+    for(int i=0;i<v.size();++i) {
+      Statement *st = v.at(i);
+      st->codegen(rc);
+    }
+ 
     // generate return statement
     
-  CodeGen:generate_ret_stmt();
+     emit_ret_stmt();
     
     // write llvm IR to file (name_only.ll)
     
@@ -91,10 +99,10 @@ int main(int argc, char **argv)
     
     cmd = std::string("gcc ") +old_name + std::string(" -o ") + new_name;
     system(cmd.c_str());
-    
+#endif    
     delete p;
     free(buffer);
-#endif
+
     
   }
   return 0;

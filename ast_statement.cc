@@ -35,6 +35,10 @@ PrintStatement:: ~PrintStatement()
   
 }
 
+Value* PrintStatement::codegen(Runtime_Context *ctx)
+{
+
+}
 //PrintLine Statement
 
 PrintLineStatement:: PrintLineStatement(Expression *_exp)
@@ -63,6 +67,11 @@ PrintLineStatement:: ~PrintLineStatement()
   
 }
 
+Value* PrintLineStatement::codegen(Runtime_Context *ctx)
+{
+
+}
+
 // Variable Declaration
 
 VariableDeclStatement::VariableDeclStatement(SymbolInfo *_info)
@@ -74,6 +83,11 @@ SymbolInfo *VariableDeclStatement::execute(Runtime_Context *ctx)
   ctx->add_symbol(info);
   var = new Variable(info);
   return NULL;
+}
+
+Value* VariableDeclStatement::codegen(Runtime_Context *ctx)
+{
+
 }
 
 // Assignment Statement
@@ -95,6 +109,12 @@ SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx)
   ctx->assign_symbol(var,info);
   return NULL;
 }
+
+Value* AssignmentStatement::codegen(Runtime_Context *ctx)
+{
+
+}
+
 
 //If Statement
 
@@ -126,6 +146,11 @@ SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
+Value* IfStatement::codegen(Runtime_Context *ctx)
+{
+
+}
+
 // While Statement
 
 WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v)
@@ -151,4 +176,8 @@ SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
+Value* WhileStatement::codegen(Runtime_Context *ctx)
+{
+
+}
 

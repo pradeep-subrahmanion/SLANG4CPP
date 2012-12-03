@@ -1,7 +1,7 @@
 numeric a;
 
 //input
-a=0;
+a=5;
 
 numeric result;
 

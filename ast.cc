@@ -1,5 +1,6 @@
 #include "ast.h"
 #include "common.h"
+#include "context.h"
 
 using namespace CodeGen;
 
@@ -23,6 +24,11 @@ TypeInfo BooleanConstant::typecheck(Compilation_Context *ctx)
 TypeInfo BooleanConstant::get_type()
 {
 	return info->type;
+}
+
+Value *BooleanConstant::codegen(Runtime_Context *ctx)
+{
+
 }
 
 // Numeric Constant
@@ -50,6 +56,10 @@ TypeInfo NumericConstant::get_type()
 	return info->type;
 }
 
+Value *NumericConstant::codegen(Runtime_Context *ctx)
+{
+
+}
 
 // String Literal
 
@@ -76,6 +86,10 @@ TypeInfo StringLiteral::get_type()
 	return info->type;
 }
 
+Value *StringLiteral::codegen(Runtime_Context *ctx)
+{
+
+}
 //Variable
 
 Variable::Variable(SymbolInfo *info)
@@ -117,7 +131,7 @@ std::string Variable::get_name()
 }
 SymbolInfo *Variable::evaluate(Runtime_Context *ctx)
 {
-  SymbolTable *st = ctx->get_symboltable();
+  SymbolInfoTable *st = ctx->get_symboltable();
   
   if(st == NULL) {
     return NULL;
@@ -128,7 +142,7 @@ SymbolInfo *Variable::evaluate(Runtime_Context *ctx)
 }
 TypeInfo Variable::typecheck(Compilation_Context *ctx)
 {
-  SymbolTable *st = ctx->get_symboltable();
+  SymbolInfoTable *st = ctx->get_symboltable();
   if(st==NULL) {
     return TYPE_ILLEGAL;
   }
@@ -148,6 +162,10 @@ TypeInfo Variable::get_type()
   return type;
 }
 
+Value *Variable::codegen(Runtime_Context *ctx)
+{
+
+}
 //Binary Plus
 
 BinaryPlus::BinaryPlus(Expression *e1,Expression *e2)
@@ -195,6 +213,11 @@ TypeInfo BinaryPlus::get_type()
   return type;
 }
 
+Value *BinaryPlus::codegen(Runtime_Context *ctx)
+{
+
+}
+
 //Binary Minus
 
 
@@ -234,6 +257,11 @@ TypeInfo BinaryMinus::typecheck(Compilation_Context *ctx)
 TypeInfo BinaryMinus::get_type()
 {
   return type;
+}
+
+Value *BinaryMinus::codegen(Runtime_Context *ctx)
+{
+
 }
 
 //Multiplication
@@ -277,6 +305,11 @@ TypeInfo Mult::get_type()
   return type;
 }
 
+Value *Mult::codegen(Runtime_Context *ctx)
+{
+
+}
+
 //Division
 
 
@@ -316,6 +349,11 @@ TypeInfo Div::typecheck(Compilation_Context *ctx)
 TypeInfo Div::get_type()
 {
   return type;
+}
+
+Value *Div::codegen(Runtime_Context *ctx)
+{
+
 }
 
 //UnaryPlus
@@ -363,6 +401,11 @@ TypeInfo UnaryPlus::get_type()
   return type;
 }
 
+Value *UnaryPlus::codegen(Runtime_Context *ctx)
+{
+
+}
+
 
 //UnaryMinus
 
@@ -408,6 +451,12 @@ TypeInfo UnaryMinus::get_type()
 {
   return type;
 }
+
+Value *UnaryMinus::codegen(Runtime_Context *ctx)
+{
+
+}
+
 
 // Relational Operator
 
@@ -509,6 +558,12 @@ TypeInfo RelationalExpression::get_type()
   return type;
 }
 
+Value *RelationalExpression::codegen(Runtime_Context *ctx)
+{
+
+}
+
+
 // Logical Operator
 
 LogicalExpression::LogicalExpression(Expression *e1,Expression *e2,Token _op)
@@ -561,6 +616,11 @@ TypeInfo LogicalExpression::get_type()
   return type;
 }
 
+Value *LogicalExpression::codegen(Runtime_Context *ctx)
+{
+
+}
+
 // Logical NOT
 
 LogicalNot::LogicalNot(Expression *e1)
@@ -598,5 +658,8 @@ TypeInfo LogicalNot::get_type()
   return type;
 }
 
+Value *LogicalNot::codegen(Runtime_Context *ctx)
+{
 
+}
 
