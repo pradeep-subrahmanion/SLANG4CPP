@@ -35,7 +35,7 @@ PrintStatement:: ~PrintStatement()
   
 }
 
-Value* PrintStatement::codegen(Runtime_Context *ctx)
+Value* PrintStatement::codegen(Execution_Context *ctx)
 {
 
 }
@@ -67,9 +67,10 @@ PrintLineStatement:: ~PrintLineStatement()
   
 }
 
-Value* PrintLineStatement::codegen(Runtime_Context *ctx)
+Value* PrintLineStatement::codegen(Execution_Context *ctx)
 {
-
+  Value *val = exp->codegen(ctx);
+  emit_print_stmt_dbl(val);
 }
 
 // Variable Declaration
@@ -85,9 +86,15 @@ SymbolInfo *VariableDeclStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
-Value* VariableDeclStatement::codegen(Runtime_Context *ctx)
+Value* VariableDeclStatement::codegen(Execution_Context *ctx)
 {
-
+  //cout << "11";
+  string name = info->symbol_name;
+  //cout << "11" << name;
+  AllocaInst *alcInst = emit_numeric_stack_variable(info->symbol_name);
+  ctx->add_symbol(info->symbol_name,alcInst);
+  //cout << "22";
+  return NULL;
 }
 
 // Assignment Statement
@@ -110,9 +117,11 @@ SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
-Value* AssignmentStatement::codegen(Runtime_Context *ctx)
+Value* AssignmentStatement::codegen(Execution_Context *ctx)
 {
-
+  AllocaInst *alcInst = ctx->get_symbol(var->get_name());
+  emit_store_Instruction(alcInst,exp->codegen(ctx));
+  return NULL;
 }
 
 
@@ -146,7 +155,7 @@ SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
-Value* IfStatement::codegen(Runtime_Context *ctx)
+Value* IfStatement::codegen(Execution_Context *ctx)
 {
 
 }
@@ -176,7 +185,7 @@ SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
   return NULL;
 }
 
-Value* WhileStatement::codegen(Runtime_Context *ctx)
+Value* WhileStatement::codegen(Execution_Context *ctx)
 {
 
 }

@@ -62,3 +62,31 @@ SymbolInfo * Compilation_Context::get_symbol(string name)
 {
   return st->get(name);
 }
+
+//Execution context
+
+Execution_Context::Execution_Context()
+{
+  st= new AllocaInstTable();
+}
+AllocaInstTable *Execution_Context::get_symboltable()
+{
+  return st;
+}
+void Execution_Context::set_symboltable(AllocaInstTable *_st)
+{
+  st = _st;
+}
+void Execution_Context::add_symbol(string key , AllocaInst *info)
+{
+  st->add(key,info);
+}
+void Execution_Context::assign_symbol(Variable *var, AllocaInst *value)
+{
+  st->assign(var,value);
+}
+AllocaInst *Execution_Context::get_symbol(string name)
+{
+  return st->get(name);
+}
+

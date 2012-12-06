@@ -45,8 +45,8 @@ public:
 	Execution_Context();
 	AllocaInstTable *get_symboltable();
 	void set_symboltable(AllocaInstTable *_st);
-  void add_symbol(AllocaInst *info);
-  void assign_symbol(Variable *var, AllocaInst * *value);
+  void add_symbol(string key ,AllocaInst *info);
+  void assign_symbol(Variable *var, AllocaInst *value);
   AllocaInst *get_symbol(string name);
 };
 

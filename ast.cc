@@ -26,7 +26,7 @@ TypeInfo BooleanConstant::get_type()
 	return info->type;
 }
 
-Value *BooleanConstant::codegen(Runtime_Context *ctx)
+Value *BooleanConstant::codegen(Execution_Context *ctx)
 {
 
 }
@@ -56,9 +56,9 @@ TypeInfo NumericConstant::get_type()
 	return info->type;
 }
 
-Value *NumericConstant::codegen(Runtime_Context *ctx)
+Value *NumericConstant::codegen(Execution_Context *ctx)
 {
-
+  return ConstantFP::get(getGlobalContext(), APFloat(info->double_val));
 }
 
 // String Literal
@@ -86,7 +86,7 @@ TypeInfo StringLiteral::get_type()
 	return info->type;
 }
 
-Value *StringLiteral::codegen(Runtime_Context *ctx)
+Value *StringLiteral::codegen(Execution_Context *ctx)
 {
 
 }
@@ -104,8 +104,7 @@ Variable::Variable(Compilation_Context *ctx, std::string _name, double _value)
   info->type = TYPE_NUMERIC;
   ///symbol table add
   ctx->add_symbol(info);
-  
-  
+  name = info->symbol_name;
 }
 Variable::Variable(Compilation_Context *ctx, std::string _name, std::string _value)
 {
@@ -115,6 +114,8 @@ Variable::Variable(Compilation_Context *ctx, std::string _name, std::string _val
   info->type = TYPE_STRING;
   ///symbol table add
   ctx->add_symbol(info);
+  name = info->symbol_name;
+
 }
 Variable::Variable(Compilation_Context *ctx, std::string _name, bool _value)
 {
@@ -124,6 +125,7 @@ Variable::Variable(Compilation_Context *ctx, std::string _name, bool _value)
   info->type = TYPE_BOOL;
   ///symbol table add
   ctx->add_symbol(info);
+  name = info->symbol_name;
 }
 std::string Variable::get_name()
 {
@@ -162,9 +164,10 @@ TypeInfo Variable::get_type()
   return type;
 }
 
-Value *Variable::codegen(Runtime_Context *ctx)
+Value *Variable::codegen(Execution_Context *ctx)
 {
-
+  AllocaInst *alcInst = ctx->get_symbol(name);
+  return emit_load_Instruction(alcInst);
 }
 //Binary Plus
 
@@ -213,9 +216,12 @@ TypeInfo BinaryPlus::get_type()
   return type;
 }
 
-Value *BinaryPlus::codegen(Runtime_Context *ctx)
+Value *BinaryPlus::codegen(Execution_Context *ctx)
 {
+  Value *val1 = exp1->codegen(ctx);
+  Value *val2 = exp2->codegen(ctx);
 
+  emit_add_instruction(val1,val2);
 }
 
 //Binary Minus
@@ -259,7 +265,7 @@ TypeInfo BinaryMinus::get_type()
   return type;
 }
 
-Value *BinaryMinus::codegen(Runtime_Context *ctx)
+Value *BinaryMinus::codegen(Execution_Context *ctx)
 {
 
 }
@@ -305,7 +311,7 @@ TypeInfo Mult::get_type()
   return type;
 }
 
-Value *Mult::codegen(Runtime_Context *ctx)
+Value *Mult::codegen(Execution_Context *ctx)
 {
 
 }
@@ -351,7 +357,7 @@ TypeInfo Div::get_type()
   return type;
 }
 
-Value *Div::codegen(Runtime_Context *ctx)
+Value *Div::codegen(Execution_Context *ctx)
 {
 
 }
@@ -401,7 +407,7 @@ TypeInfo UnaryPlus::get_type()
   return type;
 }
 
-Value *UnaryPlus::codegen(Runtime_Context *ctx)
+Value *UnaryPlus::codegen(Execution_Context *ctx)
 {
 
 }
@@ -452,7 +458,7 @@ TypeInfo UnaryMinus::get_type()
   return type;
 }
 
-Value *UnaryMinus::codegen(Runtime_Context *ctx)
+Value *UnaryMinus::codegen(Execution_Context *ctx)
 {
 
 }
@@ -558,7 +564,7 @@ TypeInfo RelationalExpression::get_type()
   return type;
 }
 
-Value *RelationalExpression::codegen(Runtime_Context *ctx)
+Value *RelationalExpression::codegen(Execution_Context *ctx)
 {
 
 }
@@ -616,7 +622,7 @@ TypeInfo LogicalExpression::get_type()
   return type;
 }
 
-Value *LogicalExpression::codegen(Runtime_Context *ctx)
+Value *LogicalExpression::codegen(Execution_Context *ctx)
 {
 
 }
@@ -658,7 +664,7 @@ TypeInfo LogicalNot::get_type()
   return type;
 }
 
-Value *LogicalNot::codegen(Runtime_Context *ctx)
+Value *LogicalNot::codegen(Execution_Context *ctx)
 {
 
 }

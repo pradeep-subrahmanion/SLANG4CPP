@@ -52,16 +52,16 @@ int main(int argc, char **argv)
     Parser *p = new Parser(program_str);
     vector<Statement *> v = p->parse(cc);
     
-    
+ #if 0   
     Runtime_Context *rc = new Runtime_Context();
 
     for(int i=0;i<v.size();++i) {
       Statement *st = v.at(i);
       st->execute(rc);
     }
-#if 0 
+ #else
      //generate top level code
-    
+     Execution_Context *rc = new Execution_Context();
      emit_top_level_code();
     
     // generate code for all statements

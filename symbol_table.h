@@ -16,11 +16,17 @@ class SymbolTable
   
 public:
   void add(T s);
+  void add(string key , T s);
   T get(string name);
   void assign(Variable *var, T value);
   void assign(string var, T value);
 };
 
+template <class T> 
+void SymbolTable<T>::add(string key , T s)
+{
+  table.insert(std::make_pair(key,s));
+}
 
 template <class T> 
 void SymbolTable<T>::add(T s)

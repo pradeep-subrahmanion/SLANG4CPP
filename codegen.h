@@ -21,7 +21,13 @@ namespace CodeGen
   void  emit_print_stmt(Value *val);
   void  emit_printline_stmt(Value *val);
   Value	*emit_global_string_for_double(double d);
-  AllocaInst *emit_entry_block_allocation(Function *TheFunction,const std::string &VarName);
+  AllocaInst *emit_numeric_stack_variable(const std::string &VarName);
+  //AllocaInst *emit_string_stack_variable(const std::string &VarName);
+  //AllocaInst *emit_bool_stack_variable(const std::string &VarName);
+  void emit_store_Instruction(AllocaInst *alloca, Value *val);
+  Value *emit_load_Instruction(AllocaInst *alloca);
+  void emit_add_instruction(Value *v1, Value *v2);
+  void  emit_print_stmt_dbl(Value *value);
 }
 
 #endif
