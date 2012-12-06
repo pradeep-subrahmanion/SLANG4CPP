@@ -1,13 +1,24 @@
 Numeric a;  
+Numeric c;
+Numeric d;
+    
 BOOLEAN b;
+BOOLEAN f;
 
 b = true;
-a=1001 ;
+f = false;
 
-a = a+ a;
+b =  !b;
+
+a=10 ;
+c = 10;
+
+d = 2;
+
+a = a+ a+(c*d)/c;
 
 printline b;
-printline a;
+print a+a;
 
 
 

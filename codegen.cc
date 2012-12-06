@@ -61,8 +61,36 @@ namespace CodeGen
     return builder.CreateLoad(alloca);
   }
 
-  void emit_add_instruction(Value *v1, Value *v2) {
-    builder.CreateFAdd(v1, v2, "nextvar");
+  Value * emit_add_instruction(Value *v1, Value *v2) {
+    return builder.CreateFAdd(v1, v2, "nextvar");
+  }
+  
+  Value *  emit_sub_instruction(Value *v1, Value *v2) {
+    return builder.CreateFSub(v1, v2, "nextvar");
+  }
+  
+  Value *  emit_mul_instruction(Value *v1, Value *v2) {
+    return builder.CreateFMul(v1, v2, "nextvar");
+  }
+  
+  Value *  emit_div_instruction(Value *v1, Value *v2) {
+    return builder.CreateFDiv(v1, v2,"nextvar");
+  }
+  
+  Value *  emit_unary_minus_instruction(Value *v)  {
+    return builder.CreateFNeg(v,"nextvar");
+  }
+  
+  Value *  emit_and_instruction(Value *v1, Value *v2) {
+    return builder.CreateAnd(v1,v2,"nextvar");
+  }
+  
+  Value *  emit_or_instruction(Value *v1, Value *v2) {
+    return builder.CreateOr(v1,v2,"nextvar");
+  }
+  
+  Value *  emit_not_instruction(Value *v) {
+    return builder.CreateNot(v,"nextvar");
   }
 
   void  emit_print_stmt(Value *value, Type *type, const char *format) {

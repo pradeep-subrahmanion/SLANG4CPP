@@ -224,7 +224,7 @@ Value *BinaryPlus::codegen(Execution_Context *ctx)
   Value *val1 = exp1->codegen(ctx);
   Value *val2 = exp2->codegen(ctx);
 
-  emit_add_instruction(val1,val2);
+  return emit_add_instruction(val1,val2);
 }
 
 //Binary Minus
@@ -270,7 +270,10 @@ TypeInfo BinaryMinus::get_type()
 
 Value *BinaryMinus::codegen(Execution_Context *ctx)
 {
-
+  Value *val1 = exp1->codegen(ctx);
+  Value *val2 = exp2->codegen(ctx);
+  
+  return emit_sub_instruction(val1,val2);
 }
 
 //Multiplication
@@ -316,7 +319,10 @@ TypeInfo Mult::get_type()
 
 Value *Mult::codegen(Execution_Context *ctx)
 {
-
+  Value *val1 = exp1->codegen(ctx);
+  Value *val2 = exp2->codegen(ctx);
+  
+  return emit_mul_instruction(val1,val2);
 }
 
 //Division
@@ -362,7 +368,10 @@ TypeInfo Div::get_type()
 
 Value *Div::codegen(Execution_Context *ctx)
 {
-
+  Value *val1 = exp1->codegen(ctx);
+  Value *val2 = exp2->codegen(ctx);
+  
+  return emit_div_instruction(val1,val2);
 }
 
 //UnaryPlus
@@ -412,7 +421,8 @@ TypeInfo UnaryPlus::get_type()
 
 Value *UnaryPlus::codegen(Execution_Context *ctx)
 {
-
+  Value *val = exp1->codegen(ctx);
+  return val;
 }
 
 
@@ -463,7 +473,8 @@ TypeInfo UnaryMinus::get_type()
 
 Value *UnaryMinus::codegen(Execution_Context *ctx)
 {
-
+  Value *v = exp1->codegen(ctx);
+  return emit_unary_minus_instruction(v);
 }
 
 
@@ -627,7 +638,16 @@ TypeInfo LogicalExpression::get_type()
 
 Value *LogicalExpression::codegen(Execution_Context *ctx)
 {
-
+  Value *val1 = exp1->codegen(ctx);
+  Value *val2 = exp2->codegen(ctx);
+  
+  if(optr == TOKEN_AND) {
+    return emit_and_instruction(val1,val2);
+  }
+  else if(optr == TOKEN_OR) {
+    return emit_or_instruction(val1,val2);
+  }
+  return NULL;
 }
 
 // Logical NOT
@@ -669,6 +689,7 @@ TypeInfo LogicalNot::get_type()
 
 Value *LogicalNot::codegen(Execution_Context *ctx)
 {
-
+  Value *val = exp->codegen(ctx);
+  return emit_not_instruction(val);
 }
 

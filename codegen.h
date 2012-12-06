@@ -25,7 +25,16 @@ namespace CodeGen
   void    emit_store_Instruction(AllocaInst *alloca, Value *val);
   Value * emit_load_Instruction(AllocaInst *alloca);
   
-  void    emit_add_instruction(Value *v1, Value *v2);
+  Value *    emit_add_instruction(Value *v1, Value *v2);
+  Value *    emit_sub_instruction(Value *v1, Value *v2);
+  Value *    emit_mul_instruction(Value *v1, Value *v2);
+  Value *    emit_div_instruction(Value *v1, Value *v2);
+  Value *    emit_unary_minus_instruction(Value *v);
+  
+  Value *    emit_and_instruction(Value *v1, Value *v2);
+  Value *    emit_or_instruction(Value *v1, Value *v2);
+  Value *    emit_not_instruction(Value *v);
+
   
   void    emit_print_stmt(Value *value,Type *type,const char *format);
   void    emit_print_stmt(Value *val,TypeInfo type);
