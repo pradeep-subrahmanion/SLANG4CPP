@@ -37,6 +37,10 @@ PrintStatement:: ~PrintStatement()
 
 Value* PrintStatement::codegen(Execution_Context *ctx)
 {
+  
+  Value *val = exp->codegen(ctx);
+  TypeInfo type= exp->get_type();
+  emit_print_stmt(val,type);
 
 }
 //PrintLine Statement
@@ -70,7 +74,8 @@ PrintLineStatement:: ~PrintLineStatement()
 Value* PrintLineStatement::codegen(Execution_Context *ctx)
 {
   Value *val = exp->codegen(ctx);
-  emit_print_stmt_dbl(val);
+  TypeInfo type= exp->get_type();
+  emit_printline_stmt(val,type);
 }
 
 // Variable Declaration
@@ -88,12 +93,10 @@ SymbolInfo *VariableDeclStatement::execute(Runtime_Context *ctx)
 
 Value* VariableDeclStatement::codegen(Execution_Context *ctx)
 {
-  //cout << "11";
   string name = info->symbol_name;
-  //cout << "11" << name;
-  AllocaInst *alcInst = emit_numeric_stack_variable(info->symbol_name);
+  AllocaInst *alcInst = emit_stack_variable(info);
   ctx->add_symbol(info->symbol_name,alcInst);
-  //cout << "22";
+
   return NULL;
 }
 

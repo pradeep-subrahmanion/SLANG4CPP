@@ -1,28 +1,13 @@
 Numeric a;  
-Numeric b;
-Numeric g;
-Numeric h;
+BOOLEAN b;
 
-BOOLEAN c;
+b = true;
+a=1001 ;
 
-STRING d;
-STRING e;
-STRING f;
+a = a+ a;
 
-e = "deep"+"hello";
-d = "pra";
-f = d + e;
+printline b;
+printline a;
 
 
-c=true;
 
-b = 3.3333;
-g = 2.0;
-h = 5.0;
-
-a = ((b*h) +g)/2.0;
-
-printline -a+a;
-printline h/2;
-printline c;
-printline f;

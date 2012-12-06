@@ -28,7 +28,8 @@ TypeInfo BooleanConstant::get_type()
 
 Value *BooleanConstant::codegen(Execution_Context *ctx)
 {
-
+  int i = (info->bool_val == false) ? 0 : 1;
+  return ConstantInt::get(getGlobalContext(), APInt(8,i));
 }
 
 // Numeric Constant
@@ -95,6 +96,8 @@ Value *StringLiteral::codegen(Execution_Context *ctx)
 Variable::Variable(SymbolInfo *info)
 {
   name = info->symbol_name;
+  type = info->type;
+
 }
 Variable::Variable(Compilation_Context *ctx, std::string _name, double _value)
 {

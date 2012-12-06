@@ -5,7 +5,7 @@
 using namespace std;
 using namespace CodeGen;
 
-#define KInterpreterMode 0
+#define KInterpreterMode 1
 
 int main(int argc, char **argv)
 {
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     Parser *p = new Parser(program_str);
     vector<Statement *> v = p->parse(cc);
     
- #if 0   
+ #if KInterpreterMode   
     Runtime_Context *rc = new Runtime_Context();
 
     for(int i=0;i<v.size();++i) {
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     old_name = new_name;
     new_name = name_only;
     
-    cmd = std::string("gcc ") +old_name + std::string(" -o ") + new_name;
+    cmd = std::string("clang ") +old_name + std::string(" -o ") + new_name;
     system(cmd.c_str());
 #endif    
     delete p;
