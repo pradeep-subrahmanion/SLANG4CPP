@@ -34,6 +34,14 @@ namespace CodeGen
   Value *    emit_and_instruction(Value *v1, Value *v2);
   Value *    emit_or_instruction(Value *v1, Value *v2);
   Value *    emit_not_instruction(Value *v);
+  
+  Value *    emit_lessthan_instruction(Value *v1, Value *v2);
+  Value *    emit_greaterthan_instruction(Value *v1, Value *v2);
+  Value *    emit_lessequal_instruction(Value *v1, Value *v2);
+  Value *    emit_greaterequal_instruction(Value *v1, Value *v2);
+  Value *    emit_equalequal_instruction(Value *v1, Value *v2);
+  Value *    emit_notequal_instruction(Value *v1, Value *v2);
+
 
   Value *         emit_condition(Value *val);
   BasicBlock *    emit_block_in_main(const char *name);

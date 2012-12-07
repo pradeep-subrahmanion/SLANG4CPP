@@ -32,20 +32,18 @@ namespace CodeGen
 
   AllocaInst * emit_stack_variable(SymbolInfo *info) {
     
-    IRBuilder<> TmpB(&mainFunc->getEntryBlock(),
-                     mainFunc->getEntryBlock().begin());
     AllocaInst *alc = NULL;
     
     if(info->type == TYPE_STRING) {
     }
     else if(info->type == TYPE_NUMERIC) {
       
-     alc = TmpB.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
+     alc = builder.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
                                info->symbol_name.c_str());
     }
     else if(info->type == TYPE_BOOL) {
       
-      alc = TmpB.CreateAlloca(Type::getInt8Ty(getGlobalContext()), 0,
+      alc = builder.CreateAlloca(Type::getInt1Ty(getGlobalContext()), 0,
                               info->symbol_name.c_str());
     }
     
@@ -92,6 +90,30 @@ namespace CodeGen
   Value *  emit_not_instruction(Value *v) {
     return builder.CreateNot(v,"var");
   }
+  Value *    emit_lessthan_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpULT(v1,v2,"var");
+  }
+  Value *    emit_greaterthan_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpUGT(v1,v2,"var");
+  }
+  Value *    emit_lessequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpULE(v1,v2,"var");
+  }
+  Value *    emit_greaterequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpUGE(v1,v2,"var");
+  }
+  Value *    emit_equalequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpOEQ(v1,v2,"var123");
+  }
+  Value *    emit_notequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpUNE(v1,v2,"var");
+  }
 
   void  emit_print_stmt(Value *value, Type *type, const char *format) {
 
@@ -123,7 +145,7 @@ namespace CodeGen
 
     }
     else if(type == TYPE_BOOL) {
-      emit_print_stmt(val,builder.getInt8Ty(),"%d");
+      emit_print_stmt(val,builder.getInt1Ty(),"%d");
     }
     
   }

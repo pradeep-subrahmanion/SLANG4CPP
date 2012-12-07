@@ -5,20 +5,10 @@ Numeric d;
 BOOLEAN b;
 BOOLEAN f;
 
-b = true;
-f = false;
+a=3;
+c=2;
 
-b =  !b;
+b = a<c;
 
-a=10 ;
-c = 10;
-
-d = 2;
-
-a = a+ a+(c*d)/c;
-
-printline b;
-print a+a;
-
-
+print b;
 

@@ -122,8 +122,9 @@ SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx)
 
 Value* AssignmentStatement::codegen(Execution_Context *ctx)
 {
+  Value *v = exp->codegen(ctx);
   AllocaInst *alcInst = ctx->get_symbol(var->get_name());
-  emit_store_Instruction(alcInst,exp->codegen(ctx));
+  emit_store_Instruction(alcInst,v);
   return NULL;
 }
 
