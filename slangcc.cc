@@ -5,7 +5,7 @@
 using namespace std;
 using namespace CodeGen;
 
-#define KInterpreterMode 1
+#define KInterpreterMode 0
 
 int main(int argc, char **argv)
 {
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     old_name = new_name;
     new_name = name_only;
     
-    cmd = std::string("clang ") +old_name + std::string(" -o ") + new_name;
+    cmd = std::string("gcc ") +old_name + std::string(" -o ") + new_name;
     system(cmd.c_str());
 #endif    
     delete p;

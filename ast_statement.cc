@@ -160,7 +160,17 @@ SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
 
 Value* IfStatement::codegen(Execution_Context *ctx)
 {
+  Value *val = condition->codegen(ctx);
+  val = emit_condition(val);
 
+  BasicBlock *then_block = emit_block_in_main("then");
+  BasicBlock *else_block = emit_block_in_main("else");
+  BasicBlock *merge_block = emit_block_in_main("merge");
+
+  emit_conditional_branch(val, then_block, else_block);
+
+  move_to_block(then_block);
+  
 }
 
 // While Statement

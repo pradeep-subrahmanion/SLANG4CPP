@@ -19,8 +19,8 @@ namespace CodeGen
   void	emit_top_level_code();
   void	emit_ret_stmt();
  
-  Value	*       emit_global_string_for_double(double d);
-  AllocaInst *  emit_stack_variable(SymbolInfo *info);
+  Value	*      emit_global_string_for_double(double d);
+  AllocaInst * emit_stack_variable(SymbolInfo *info);
   
   void    emit_store_Instruction(AllocaInst *alloca, Value *val);
   Value * emit_load_Instruction(AllocaInst *alloca);
@@ -34,6 +34,18 @@ namespace CodeGen
   Value *    emit_and_instruction(Value *v1, Value *v2);
   Value *    emit_or_instruction(Value *v1, Value *v2);
   Value *    emit_not_instruction(Value *v);
+
+  Value *         emit_condition(Value *val);
+  BasicBlock *    emit_block_in_main(const char *name);
+  void  emit_conditional_branch(Value *condition_val , BasicBlock *then_block, BasicBlock *else_block);
+
+  void move_to_block(BasicBlock *block);
+  BasicBlock *get_insert_block();
+  void create_branch(BasicBlock *block);
+  void add_blockval_in_phi(PHINode *phi, BasicBlock *block, Value *val);
+
+  PHINode * emit_phi_node();
+  
 
   
   void    emit_print_stmt(Value *value,Type *type,const char *format);

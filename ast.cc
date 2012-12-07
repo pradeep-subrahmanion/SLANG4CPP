@@ -147,11 +147,13 @@ SymbolInfo *Variable::evaluate(Runtime_Context *ctx)
 }
 TypeInfo Variable::typecheck(Compilation_Context *ctx)
 {
+
   SymbolInfoTable *st = ctx->get_symboltable();
   if(st==NULL) {
     return TYPE_ILLEGAL;
   }
   else {
+
     SymbolInfo *inf = st->get(name);
     if(inf != NULL) {
       type = inf->type;
@@ -213,6 +215,8 @@ TypeInfo BinaryPlus::typecheck(Compilation_Context *ctx)
     type = info1;
     return type;
   }
+
+  return TYPE_ILLEGAL;
 }
 TypeInfo BinaryPlus::get_type()
 {
@@ -221,6 +225,7 @@ TypeInfo BinaryPlus::get_type()
 
 Value *BinaryPlus::codegen(Execution_Context *ctx)
 {
+
   Value *val1 = exp1->codegen(ctx);
   Value *val2 = exp2->codegen(ctx);
 

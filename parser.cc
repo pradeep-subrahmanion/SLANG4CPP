@@ -226,7 +226,8 @@ Statement *Parser::parse_print_statement(Compilation_Context *ctx)
 {
   get_next();
   Expression *e = bexpr(ctx);
-  
+  e->typecheck(ctx);
+ 
   if(current_token != TOKEN_SEMI) {
     exit_with_message("\n; is expected\n");
   }
@@ -237,6 +238,8 @@ Statement *Parser::parse_printline_statement(Compilation_Context *ctx)
 {
   get_next();
   Expression *e = bexpr(ctx);
+  e->typecheck(ctx);
+
   if(current_token != TOKEN_SEMI) {
     exit_with_message("\n; is expected\n");
   }

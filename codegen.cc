@@ -62,35 +62,35 @@ namespace CodeGen
   }
 
   Value * emit_add_instruction(Value *v1, Value *v2) {
-    return builder.CreateFAdd(v1, v2, "nextvar");
+    return builder.CreateFAdd(v1, v2, "var");
   }
   
   Value *  emit_sub_instruction(Value *v1, Value *v2) {
-    return builder.CreateFSub(v1, v2, "nextvar");
+    return builder.CreateFSub(v1, v2, "var");
   }
   
   Value *  emit_mul_instruction(Value *v1, Value *v2) {
-    return builder.CreateFMul(v1, v2, "nextvar");
+    return builder.CreateFMul(v1, v2, "var");
   }
   
   Value *  emit_div_instruction(Value *v1, Value *v2) {
-    return builder.CreateFDiv(v1, v2,"nextvar");
+    return builder.CreateFDiv(v1, v2,"var");
   }
   
   Value *  emit_unary_minus_instruction(Value *v)  {
-    return builder.CreateFNeg(v,"nextvar");
+    return builder.CreateFNeg(v,"var");
   }
   
   Value *  emit_and_instruction(Value *v1, Value *v2) {
-    return builder.CreateAnd(v1,v2,"nextvar");
+    return builder.CreateAnd(v1,v2,"var");
   }
   
   Value *  emit_or_instruction(Value *v1, Value *v2) {
-    return builder.CreateOr(v1,v2,"nextvar");
+    return builder.CreateOr(v1,v2,"var");
   }
   
   Value *  emit_not_instruction(Value *v) {
-    return builder.CreateNot(v,"nextvar");
+    return builder.CreateNot(v,"var");
   }
 
   void  emit_print_stmt(Value *value, Type *type, const char *format) {
@@ -101,7 +101,7 @@ namespace CodeGen
     putsArgs.push_back(type);
     
     llvm::ArrayRef<llvm::Type*>  argsRef(putsArgs);
-    llvm::FunctionType *putsType = llvm::FunctionType::get(builder.getInt32Ty(), argsRef, false);
+    llvm::FunctionType *putsType = llvm::FunctionType::get(builder.getInt32Ty(), argsRef, true);
     llvm::Constant *putsFunc = module->getOrInsertFunction("printf", putsType);
 
     std::vector<llvm::Value *> putsArgs1;
@@ -139,6 +139,51 @@ namespace CodeGen
     else if(type == TYPE_BOOL) {
       emit_print_stmt(val,builder.getInt8Ty(),"%d\n");
     }
+  }
+
+  Value * emit_condition(Value *val)
+  {
+    
+    return builder.CreateFCmpONE(val,
+                              ConstantFP::get(getGlobalContext(), APFloat(0.0)),
+                                "ifcond");
+  }
+
+  BasicBlock * emit_block_in_main(const char *name) 
+  {
+
+    return BasicBlock::Create(getGlobalContext(), name, mainFunc);  
+
+  }
+  void  emit_conditional_branch(Value *condition_val , BasicBlock *then_block, BasicBlock *else_block) 
+  {
+    builder.CreateCondBr(condition_val, then_block, else_block);
+  }
+
+  void move_to_block(BasicBlock *block)
+  {
+    builder.SetInsertPoint(block);
+  }
+
+  BasicBlock *get_insert_block()
+  {
+    return builder.GetInsertBlock();
+  }
+
+  void create_branch(BasicBlock *block)
+  {
+     builder.CreateBr(block);
+  }
+
+  PHINode * emit_phi_node()
+  {
+    return builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2,
+                                  "iftmp");
+  }
+
+  void add_blockval_in_phi(PHINode *phi, BasicBlock *block, Value *val)
+  {
+      phi->addIncoming(val, block); 
   }
   
 }
