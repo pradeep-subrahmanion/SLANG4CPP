@@ -5,7 +5,7 @@
 using namespace std;
 using namespace CodeGen;
 
-#define KInterpreterMode 1
+#define KInterpreterMode 0
 
 int main(int argc, char **argv)
 {

@@ -30,6 +30,12 @@ namespace CodeGen
     return val;
   }
 
+  Value	*emit_global_string(const char *buffer)
+  {
+    Value *val = builder.CreateGlobalStringPtr(buffer);
+    return val;
+  }
+
   AllocaInst * emit_stack_variable(SymbolInfo *info) {
     
     IRBuilder<> TmpB(&mainFunc->getEntryBlock(),
@@ -37,10 +43,13 @@ namespace CodeGen
     AllocaInst *alc = NULL;
     
     if(info->type == TYPE_STRING) {
+
+      alc = TmpB.CreateAlloca(Type::getInt8PtrTy(getGlobalContext()), 0,
+                               info->symbol_name.c_str());
     }
     else if(info->type == TYPE_NUMERIC) {
       
-     alc = TmpB.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
+      alc = TmpB.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
                                info->symbol_name.c_str());
     }
     else if(info->type == TYPE_BOOL) {
@@ -116,11 +125,10 @@ namespace CodeGen
   {
     
     if(type == TYPE_STRING) {
+      emit_print_stmt(val,builder.getInt8Ty()->getPointerTo(),"%s");
     }
-    else if(type == TYPE_NUMERIC) {
-      
+    else if(type == TYPE_NUMERIC) {      
       emit_print_stmt(val,builder.getDoubleTy(),"%f");
-
     }
     else if(type == TYPE_BOOL) {
       emit_print_stmt(val,builder.getInt8Ty(),"%d");
@@ -131,6 +139,7 @@ namespace CodeGen
   void emit_printline_stmt(Value *val,TypeInfo type)
   {
     if(type == TYPE_STRING) {
+      emit_print_stmt(val,builder.getInt8Ty()->getPointerTo(),"%s\n");
     }
     else if(type == TYPE_NUMERIC) {
       emit_print_stmt(val,builder.getDoubleTy(),"%f\n");
@@ -184,6 +193,32 @@ namespace CodeGen
   void add_blockval_in_phi(PHINode *phi, BasicBlock *block, Value *val)
   {
       phi->addIncoming(val, block); 
+  }
+
+  Value* emit_str_cat(Value *v1,Value *v2)
+  {
+
+ #if 0
+   CreateAlloca(Type::getInt8PtrTy(getGlobalContext()), 0,
+                               info->symbol_name.c_str());
+
+    std::vector<llvm::Type *> args;
+    args.push_back(builder.getInt8Ty()->getPointerTo());
+    args.push_back(builder.getInt8Ty()->getPointerTo());
+    
+    llvm::ArrayRef<llvm::Type*>  argsRef(args);
+    llvm::FunctionType *scatType = llvm::FunctionType::get(builder.getInt8Ty()->getPointerTo(), argsRef, true);
+    llvm::Constant *scatFunc = module->getOrInsertFunction("strcat", scatType);
+
+    std::vector<llvm::Value *> args1;
+    args1.push_back(v1);
+    args1.push_back(v2);
+
+    llvm::ArrayRef<llvm::Value*>  argsRef1(args1);
+
+    return builder.CreateCall(scatFunc,argsRef1);
+#endif
+
   }
   
 }

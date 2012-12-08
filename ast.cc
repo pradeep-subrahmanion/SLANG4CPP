@@ -89,7 +89,7 @@ TypeInfo StringLiteral::get_type()
 
 Value *StringLiteral::codegen(Execution_Context *ctx)
 {
-
+  return emit_global_string(info->string_val.c_str());
 }
 //Variable
 
@@ -225,11 +225,24 @@ TypeInfo BinaryPlus::get_type()
 
 Value *BinaryPlus::codegen(Execution_Context *ctx)
 {
+  TypeInfo info1 = exp1->get_type();
+  TypeInfo info2 = exp2->get_type();
 
-  Value *val1 = exp1->codegen(ctx);
-  Value *val2 = exp2->codegen(ctx);
+  Value *result = NULL;
 
-  return emit_add_instruction(val1,val2);
+  if(info1 == info2) {
+    if(info1 == TYPE_NUMERIC) {
+      result = emit_add_instruction(exp1->codegen(ctx),exp2->codegen(ctx));
+    }
+    else if(info1 == TYPE_STRING) {
+      result = emit_str_cat(exp1->codegen(ctx),exp2->codegen(ctx));
+      
+     // emit_global_string(info->string_val.c_str());
+    }
+
+  }
+
+  return result;
 }
 
 //Binary Minus
