@@ -2,11 +2,19 @@
 
 namespace CodeGen
 {
+
+//
+// setup context , create new module . 
+//
+
   llvm::LLVMContext & context = llvm::getGlobalContext();
   llvm::Module *module = new llvm::Module("main_module", context);
   llvm::IRBuilder<> builder(context);
   llvm::Function *mainFunc;
 
+//
+// Create main function , basic block for main . 
+//
   void emit_top_level_code()
   {
     
@@ -36,32 +44,37 @@ namespace CodeGen
     return val;
   }
 
+//
+// Method to create stack variable from SymbolInfo
+//
+
   AllocaInst * emit_stack_variable(SymbolInfo *info) {
     
-    IRBuilder<> TmpB(&mainFunc->getEntryBlock(),
-                     mainFunc->getEntryBlock().begin());
     AllocaInst *alc = NULL;
     
     if(info->type == TYPE_STRING) {
 
-      alc = TmpB.CreateAlloca(Type::getInt8PtrTy(getGlobalContext()), 0,
+      alc = builder.CreateAlloca(Type::getInt8PtrTy(getGlobalContext()), 0,
                                info->symbol_name.c_str());
     }
     else if(info->type == TYPE_NUMERIC) {
       
-      alc = TmpB.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
+      alc = builder.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0,
+
                                info->symbol_name.c_str());
     }
     else if(info->type == TYPE_BOOL) {
       
-      alc = TmpB.CreateAlloca(Type::getInt8Ty(getGlobalContext()), 0,
+      alc = builder.CreateAlloca(Type::getInt1Ty(getGlobalContext()), 0,
                               info->symbol_name.c_str());
     }
     
     return alc;
   }
 
-
+//
+// load / store stack variable.
+//
   void emit_store_Instruction(AllocaInst *alloca, Value *val) {
     builder.CreateStore(val, alloca);
   }
@@ -69,6 +82,10 @@ namespace CodeGen
   Value *emit_load_Instruction(AllocaInst *alloca) {
     return builder.CreateLoad(alloca);
   }
+
+//
+// codegen for arithmetic operators
+//
 
   Value * emit_add_instruction(Value *v1, Value *v2) {
     return builder.CreateFAdd(v1, v2, "var");
@@ -90,6 +107,10 @@ namespace CodeGen
     return builder.CreateFNeg(v,"var");
   }
   
+//
+// codegen for logical operators
+//
+
   Value *  emit_and_instruction(Value *v1, Value *v2) {
     return builder.CreateAnd(v1,v2,"var");
   }
@@ -101,6 +122,40 @@ namespace CodeGen
   Value *  emit_not_instruction(Value *v) {
     return builder.CreateNot(v,"var");
   }
+
+
+//
+// codegen for relational operators
+//
+
+  Value *    emit_lessthan_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpULT(v1,v2,"var");
+  }
+  Value *    emit_greaterthan_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpUGT(v1,v2,"var");
+  }
+  Value *    emit_lessequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpULE(v1,v2,"var");
+  }
+  Value *    emit_greaterequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpUGE(v1,v2,"var");
+  }
+  Value *    emit_equalequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpOEQ(v1,v2,"var123");
+  }
+  Value *    emit_notequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateFCmpUNE(v1,v2,"var");
+  }
+
+//
+// codegen for print statements
+//
 
   void  emit_print_stmt(Value *value, Type *type, const char *format) {
 
@@ -131,7 +186,7 @@ namespace CodeGen
       emit_print_stmt(val,builder.getDoubleTy(),"%f");
     }
     else if(type == TYPE_BOOL) {
-      emit_print_stmt(val,builder.getInt8Ty(),"%d");
+      emit_print_stmt(val,builder.getInt1Ty(),"%d");
     }
     
   }
@@ -148,77 +203,6 @@ namespace CodeGen
     else if(type == TYPE_BOOL) {
       emit_print_stmt(val,builder.getInt8Ty(),"%d\n");
     }
-  }
-
-  Value * emit_condition(Value *val)
-  {
-    
-    return builder.CreateFCmpONE(val,
-                              ConstantFP::get(getGlobalContext(), APFloat(0.0)),
-                                "ifcond");
-  }
-
-  BasicBlock * emit_block_in_main(const char *name) 
-  {
-
-    return BasicBlock::Create(getGlobalContext(), name, mainFunc);  
-
-  }
-  void  emit_conditional_branch(Value *condition_val , BasicBlock *then_block, BasicBlock *else_block) 
-  {
-    builder.CreateCondBr(condition_val, then_block, else_block);
-  }
-
-  void move_to_block(BasicBlock *block)
-  {
-    builder.SetInsertPoint(block);
-  }
-
-  BasicBlock *get_insert_block()
-  {
-    return builder.GetInsertBlock();
-  }
-
-  void create_branch(BasicBlock *block)
-  {
-     builder.CreateBr(block);
-  }
-
-  PHINode * emit_phi_node()
-  {
-    return builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2,
-                                  "iftmp");
-  }
-
-  void add_blockval_in_phi(PHINode *phi, BasicBlock *block, Value *val)
-  {
-      phi->addIncoming(val, block); 
-  }
-
-  Value* emit_str_cat(Value *v1,Value *v2)
-  {
-
- #if 0
-   CreateAlloca(Type::getInt8PtrTy(getGlobalContext()), 0,
-                               info->symbol_name.c_str());
-
-    std::vector<llvm::Type *> args;
-    args.push_back(builder.getInt8Ty()->getPointerTo());
-    args.push_back(builder.getInt8Ty()->getPointerTo());
-    
-    llvm::ArrayRef<llvm::Type*>  argsRef(args);
-    llvm::FunctionType *scatType = llvm::FunctionType::get(builder.getInt8Ty()->getPointerTo(), argsRef, true);
-    llvm::Constant *scatFunc = module->getOrInsertFunction("strcat", scatType);
-
-    std::vector<llvm::Value *> args1;
-    args1.push_back(v1);
-    args1.push_back(v2);
-
-    llvm::ArrayRef<llvm::Value*>  argsRef1(args1);
-
-    return builder.CreateCall(scatFunc,argsRef1);
-#endif
-
   }
   
 }

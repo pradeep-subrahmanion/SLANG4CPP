@@ -29,7 +29,7 @@ TypeInfo BooleanConstant::get_type()
 Value *BooleanConstant::codegen(Execution_Context *ctx)
 {
   int i = (info->bool_val == false) ? 0 : 1;
-  return ConstantInt::get(getGlobalContext(), APInt(8,i));
+  return ConstantInt::get(getGlobalContext(), APInt(1,i));
 }
 
 // Numeric Constant
@@ -235,9 +235,7 @@ Value *BinaryPlus::codegen(Execution_Context *ctx)
       result = emit_add_instruction(exp1->codegen(ctx),exp2->codegen(ctx));
     }
     else if(info1 == TYPE_STRING) {
-      result = emit_str_cat(exp1->codegen(ctx),exp2->codegen(ctx));
-      
-     // emit_global_string(info->string_val.c_str());
+
     }
 
   }
@@ -599,6 +597,36 @@ TypeInfo RelationalExpression::get_type()
 Value *RelationalExpression::codegen(Execution_Context *ctx)
 {
 
+  TypeInfo type1 =  exp1->get_type();
+  TypeInfo type2 =  exp2->get_type();
+  
+  Value *v1= exp1->codegen(ctx);
+  Value *v2= exp2->codegen(ctx);
+
+  if(type1 == TYPE_NUMERIC && type2 == TYPE_NUMERIC) {
+
+    if(optr == OPTR_EQUAL) {
+      return emit_equalequal_instruction(v1,v2);
+    }
+    else if(optr == OPTR_NEQUAL) {
+      return emit_notequal_instruction(v1,v2);
+    }
+    else if(optr == OPTR_GREATER_THAN) {
+      return emit_greaterthan_instruction(v1,v2);
+    }
+    else if(optr == OPTR_GREATER_EQUAL) {
+      return emit_greaterequal_instruction(v1,v2);
+    }
+    else if(optr == OPTR_LESS_THAN) {
+      return emit_lessthan_instruction(v1,v2);
+    }
+    else if(optr == OPTR_LESS_EQUAL) {
+      return emit_lessequal_instruction(v1,v2);
+    }
+  }
+
+  return NULL;
+ 
 }
 
 

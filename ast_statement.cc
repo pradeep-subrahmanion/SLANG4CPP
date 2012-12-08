@@ -124,8 +124,9 @@ SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx)
 
 Value* AssignmentStatement::codegen(Execution_Context *ctx)
 {
+  Value *v = exp->codegen(ctx);
   AllocaInst *alcInst = ctx->get_symbol(var->get_name());
-  emit_store_Instruction(alcInst,exp->codegen(ctx));
+  emit_store_Instruction(alcInst,v);
   return NULL;
 }
 
@@ -162,30 +163,32 @@ SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
 
 Value* IfStatement::codegen(Execution_Context *ctx)
 {
-  Value *CondV = condition->codegen(ctx);
+  Value *condV = condition->codegen(ctx);
 
-  Value *ThenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
-  Value *ElseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
+  Value *thenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
+  Value *elseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
 
-  if (CondV == NULL) {cout <<"null";return 0;};
+  if (condV == NULL) {cout <<"null";return 0;};
 
-  // Convert condition to a bool by comparing equal to 0.0.
-  CondV = builder.CreateFCmpONE(CondV,
-                              ConstantFP::get(getGlobalContext(), APFloat(0.0)),
+  // Create condition ,single bit integer is used since relational operators returns bool
+ 
+  condV = builder.CreateICmpEQ(condV,
+                              ConstantInt::get(getGlobalContext(), APInt(1,1)),
                                 "ifcond");
-#if 0
+
   Function *TheFunction = builder.GetInsertBlock()->getParent();
 
-  // Create blocks for the then and else cases.  Insert the 'then' block at the
-  // end of the function.
-  BasicBlock *ThenBB =  BasicBlock::Create(getGlobalContext(), "then", TheFunction);
-  BasicBlock *ElseBB =  BasicBlock::Create(getGlobalContext(), "else");
-  BasicBlock *MergeBB = BasicBlock::Create(getGlobalContext(), "ifcont");
+  // create block for if , else and merge blocks
 
-  builder.CreateCondBr(CondV, ThenBB, ElseBB);
+  BasicBlock *thenBB =  BasicBlock::Create(getGlobalContext(), "then", TheFunction);
+  BasicBlock *elseBB =  BasicBlock::Create(getGlobalContext(), "else");
+  BasicBlock *mergeBB = BasicBlock::Create(getGlobalContext(), "merge");
 
-  // Emit then value.
-  builder.SetInsertPoint(ThenBB);
+  builder.CreateCondBr(condV, thenBB, elseBB);
+
+  builder.SetInsertPoint(thenBB);
+
+  // emit code for all statements in if
 
   for(int i=0;i<if_statements.size();++i) {
     
@@ -193,14 +196,14 @@ Value* IfStatement::codegen(Execution_Context *ctx)
     st->codegen(ctx);
   }
 
-  builder.CreateBr(MergeBB);
+  builder.CreateBr(mergeBB);
 
-  // Codegen of 'Then' can change the current block, update ThenBB for the PHI.
-  ThenBB = builder.GetInsertBlock();
+  thenBB = builder.GetInsertBlock();
 
-  // Emit else block.
-  TheFunction->getBasicBlockList().push_back(ElseBB);
-  builder.SetInsertPoint(ElseBB);
+  TheFunction->getBasicBlockList().push_back(elseBB);
+  builder.SetInsertPoint(elseBB);
+
+  // emit code for all statements in else
 
   for(int i=0;i<else_statements.size();++i) {
     
@@ -208,21 +211,24 @@ Value* IfStatement::codegen(Execution_Context *ctx)
     st->codegen(ctx);
   }
 
-  builder.CreateBr(MergeBB);
+  builder.CreateBr(mergeBB);
 
-  // Codegen of 'Else' can change the current block, update ElseBB for the PHI.
-  ElseBB = builder.GetInsertBlock();
+  elseBB = builder.GetInsertBlock();
 
   // Emit merge block.
-  TheFunction->getBasicBlockList().push_back(MergeBB);
-  builder.SetInsertPoint(MergeBB);
+
+  TheFunction->getBasicBlockList().push_back(mergeBB);
+  builder.SetInsertPoint(mergeBB);
+
+  //insert PHI node
+
   PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2,
                                   "iftmp");
 
-  PN->addIncoming(ThenV, ThenBB);
-  PN->addIncoming(ElseV, ElseBB);
+  PN->addIncoming(thenV, thenBB);
+  PN->addIncoming(elseV, elseBB);
   return PN;
-#endif
+
 }
 
 // While Statement
@@ -252,6 +258,53 @@ SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
 
 Value* WhileStatement::codegen(Execution_Context *ctx)
 {
-  return NULL;
+
+ //
+ // Create blocks for loop header , body and exit . 
+ // make explicit branch to loop header , conditional branch to body and 
+ // another explicit branch from end of body to loop header
+ //
+
+ Value *thenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
+ Value *elseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
+
+ Function *TheFunction = builder.GetInsertBlock()->getParent(); 
+
+ BasicBlock *loopBB = BasicBlock::Create(getGlobalContext(), "loop", TheFunction);
+ BasicBlock *bodyBB = BasicBlock::Create(getGlobalContext(), "body", TheFunction);
+ BasicBlock *exitBB = BasicBlock::Create(getGlobalContext(), "exit", TheFunction);
+ builder.CreateBr(loopBB);
+
+// emit loop header
+
+ builder.SetInsertPoint(loopBB);
+
+ Value *condV = condition->codegen(ctx);
+ condV = builder.CreateICmpEQ(condV,
+                              ConstantInt::get(getGlobalContext(), APInt(1,1)),
+                                "condition");
+
+ builder.CreateCondBr(condV, bodyBB, exitBB);
+
+ builder.SetInsertPoint(bodyBB);
+ 
+// emit code for loop body
+
+ for(int i=0;i<statements.size();++i) {
+    
+    Statement *st = statements.at(i);
+    st->codegen(ctx);
+  }
+ 
+  builder.CreateBr(loopBB); // back to loop header.
+
+// emit exit block
+
+  builder.SetInsertPoint(exitBB);
+
+  PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()),1,
+                                  "iftmp");
+  PN->addIncoming(thenV, loopBB);
+  return PN;
 }
 
