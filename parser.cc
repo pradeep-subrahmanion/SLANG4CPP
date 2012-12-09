@@ -107,7 +107,6 @@ Expression *Parser::factor(Compilation_Context *ctx)
     current_token = get_token();
   }
   else if(current_token == TOKEN_NOT) {
-    cout << "NOt....";
     l_token = current_token;
     current_token = get_token();
     result = factor(ctx);
