@@ -153,6 +153,16 @@ namespace CodeGen
     return builder.CreateFCmpUNE(v1,v2,"var");
   }
 
+  Value *    emit_int_equal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateICmpEQ(v1,v2,"var");
+  }
+
+  Value *    emit_int_notequal_instruction(Value *v1, Value *v2)
+  {
+    return builder.CreateICmpNE(v1,v2,"var");
+  }
+
 //
 // codegen for print statements
 //
@@ -205,6 +215,25 @@ namespace CodeGen
     }
   }
 
+  Value * emit_strcmp_stmt(Value *val1,Value *val2)
+  {
+
+    std::vector<llvm::Type *> putsArgs;
+    putsArgs.push_back(builder.getInt8Ty()->getPointerTo());
+    putsArgs.push_back(builder.getInt8Ty()->getPointerTo());
+    
+    llvm::ArrayRef<llvm::Type*>  argsRef(putsArgs);
+    llvm::FunctionType *putsType = llvm::FunctionType::get(builder.getInt1Ty(), argsRef, true);
+    llvm::Constant *putsFunc = module->getOrInsertFunction("strcmp", putsType);
+
+    std::vector<llvm::Value *> putsArgs1;
+    putsArgs1.push_back(val1);
+    putsArgs1.push_back(val2);
+
+    llvm::ArrayRef<llvm::Value*>  argsRef1(putsArgs1);
+    Value* v =  builder.CreateCall(putsFunc,argsRef1);
+    return v;
+  }
  
   
   

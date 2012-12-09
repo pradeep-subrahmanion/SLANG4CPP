@@ -50,6 +50,8 @@ namespace CodeGen
   Value *    emit_greaterequal_instruction(Value *v1, Value *v2);
   Value *    emit_equalequal_instruction(Value *v1, Value *v2);
   Value *    emit_notequal_instruction(Value *v1, Value *v2);
+  Value *    emit_int_equal_instruction(Value *v1, Value *v2);
+  Value *    emit_int_notequal_instruction(Value *v1, Value *v2);
 
   // codegen for print statements
 
@@ -57,6 +59,7 @@ namespace CodeGen
   void    emit_print_stmt(Value *val,TypeInfo type);
   void    emit_printline_stmt(Value *val,TypeInfo type);
 
+  Value *    emit_strcmp_stmt(Value *val1,Value *val2);
 
 }
 

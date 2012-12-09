@@ -652,6 +652,27 @@ Value *RelationalExpression::codegen(Execution_Context *ctx)
     }
   }
 
+  else if(type1 == TYPE_STRING && type2 == TYPE_STRING) {
+    if(optr == OPTR_EQUAL) {
+
+      Value *v = emit_strcmp_stmt(v1,v2);
+      return emit_not_instruction(v);
+    }
+
+    else if(optr == OPTR_NEQUAL) {
+      return emit_strcmp_stmt(v1,v2);
+    }
+  }
+
+ else if(type1 == TYPE_BOOL && type2 == TYPE_BOOL) {
+    if(optr == OPTR_EQUAL) {
+      return emit_int_equal_instruction(v1,v2);
+    }
+
+    else if(optr == OPTR_NEQUAL) {
+      return emit_int_notequal_instruction(v1,v2);
+    }
+  }
   return NULL;
  
 }
