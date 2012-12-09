@@ -105,6 +105,13 @@ typedef enum {
   OPTR_LESS_EQUAL
 }RelationalOperator;
 
+typedef enum {
+  ExpressionTypeNone,
+  ExpressionTypeStringLiteral ,
+  ExpressionTypeVariable,
+  ExpressionTypeBinaryPlus
+}ExpressionType;
+
 
 // Represents symbol.
 

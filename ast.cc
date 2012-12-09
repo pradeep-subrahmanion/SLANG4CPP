@@ -66,6 +66,7 @@ Value *NumericConstant::codegen(Execution_Context *ctx)
 
 StringLiteral::StringLiteral(std::string _value)
 {
+  
 	info = new SymbolInfo();
 	info->symbol_name = "";
 	info->type = TYPE_STRING;
@@ -87,20 +88,27 @@ TypeInfo StringLiteral::get_type()
 	return info->type;
 }
 
+string StringLiteral::evaluate_string(Execution_Context *ctx)
+{
+  return info->string_val;
+}
 Value *StringLiteral::codegen(Execution_Context *ctx)
 {
   return emit_global_string(info->string_val.c_str());
 }
 //Variable
 
-Variable::Variable(SymbolInfo *info)
+Variable::Variable(SymbolInfo *_info)
 {
-  name = info->symbol_name;
-  type = info->type;
+  info = _info;
+
+  name = _info->symbol_name;
+  type = _info->type;
 
 }
 Variable::Variable(Compilation_Context *ctx, std::string _name, double _value)
 {
+
   SymbolInfo *info = new SymbolInfo();
   info->symbol_name = _name;
   info->double_val = _value;
@@ -111,6 +119,7 @@ Variable::Variable(Compilation_Context *ctx, std::string _name, double _value)
 }
 Variable::Variable(Compilation_Context *ctx, std::string _name, std::string _value)
 {
+
   SymbolInfo *info = new SymbolInfo();
   info->symbol_name = _name;
   info->string_val = _value;
@@ -122,6 +131,7 @@ Variable::Variable(Compilation_Context *ctx, std::string _name, std::string _val
 }
 Variable::Variable(Compilation_Context *ctx, std::string _name, bool _value)
 {
+
   SymbolInfo *info = new SymbolInfo();
   info->symbol_name = _name;
   info->bool_val = _value;
@@ -169,15 +179,23 @@ TypeInfo Variable::get_type()
   return type;
 }
 
+string Variable::evaluate_string(Execution_Context *ctx)
+{
+  return info->string_val;
+}
+
 Value *Variable::codegen(Execution_Context *ctx)
 {
+
   AllocaInst *alcInst = ctx->get_symbol(name);
   return emit_load_Instruction(alcInst);
+
 }
 //Binary Plus
 
 BinaryPlus::BinaryPlus(Expression *e1,Expression *e2)
 {
+
   exp1 = e1;
   exp2 = e2;
 }
@@ -223,6 +241,13 @@ TypeInfo BinaryPlus::get_type()
   return type;
 }
 
+string BinaryPlus::evaluate_string(Execution_Context *ctx)
+{
+  string str1 = exp1->evaluate_string(ctx);
+  string str2 = exp2->evaluate_string(ctx);
+
+  return str1 + str2;
+}
 Value *BinaryPlus::codegen(Execution_Context *ctx)
 {
   TypeInfo info1 = exp1->get_type();
@@ -232,10 +257,12 @@ Value *BinaryPlus::codegen(Execution_Context *ctx)
 
   if(info1 == info2) {
     if(info1 == TYPE_NUMERIC) {
-      result = emit_add_instruction(exp1->codegen(ctx),exp2->codegen(ctx));
+      Value *v1 = exp1->codegen(ctx);
+      Value *v2 = exp2->codegen(ctx);
+      result = emit_add_instruction(v1,v2);
     }
-    else if(info1 == TYPE_STRING) {
-
+    else if(info1 == TYPE_STRING) {      
+      result = emit_global_string(evaluate_string(ctx).c_str());
     }
 
   }

@@ -1,3 +1,8 @@
+A C++ implementation of SLANG compiler (http://slangfordotnet.codeplex.com). SLAG4CPP generates native code using llvm backend . 
+
+Orignal 
+
+
 BUILD
 -----
 Make sure gcc and llvm are installed . Check commands 'gcc' and 'llc'.

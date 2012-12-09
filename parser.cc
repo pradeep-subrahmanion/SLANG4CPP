@@ -308,6 +308,13 @@ Statement *Parser::parse_assignment_statement(Compilation_Context *ctx)
     exit_with_message("Missing ; symbol");
     return NULL;
   }
+
+  if(info->type == TYPE_STRING) {
+    /// compute string expression like '+' in compile time . store the result in string_val of info
+
+    string str = exp->evaluate_string(NULL);
+    info->string_val = str;
+  }
   
   return new AssignmentStatement(info,exp);
 }
