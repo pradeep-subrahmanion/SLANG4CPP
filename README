@@ -1,6 +1,4 @@
-A C++ implementation of SLANG compiler (http://slangfordotnet.codeplex.com). SLAG4CPP generates native code using llvm backend . 
-
-Orignal 
+A C++ implementation of SLANG compiler (http://slangfordotnet.codeplex.com). SLAG4CPP generates native code using llvm . 
 
 
 BUILD
