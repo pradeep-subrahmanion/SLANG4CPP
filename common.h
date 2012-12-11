@@ -16,6 +16,8 @@
 #include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/Support/raw_ostream.h"
 
+using namespace std;
+
 template <class T> class SymbolTable;
 
 
@@ -125,6 +127,23 @@ public:
 	bool bool_val;
   SymbolInfo() {};
   SymbolInfo(std::string _name) { symbol_name = _name;}
+  
+};
+
+// Represents function.
+
+class FunctionInfo
+{
+public:
+  std::string name;
+  TypeInfo ret_type;
+  std::vector<TypeInfo> type_infos;
+
+  FunctionInfo(std::string _name, TypeInfo _ret_type, std::vector<TypeInfo>_type_infos) {
+    name = _name;
+    ret_type = _ret_type;
+    type_infos = _type_infos;
+  }
   
 };
 
