@@ -1,11 +1,12 @@
 #include "codegen.h"
 #include	"parser.h"
 #include "context.h"
+#include "builder.h"
 
 using namespace std;
 using namespace CodeGen;
 
-#define KInterpreterMode 0
+#define KInterpreterMode 1
 
 int main(int argc, char **argv)
 {
@@ -46,20 +47,22 @@ int main(int argc, char **argv)
     // read program text
     
     string program_str(buffer);
-    Compilation_Context *cc= new Compilation_Context();
+   // Compilation_Context *cc= new Compilation_Context();
     // parse , get all statements
-    
+        
     Parser *p = new Parser(program_str);
-    vector<Statement *> v = p->parse(cc);
+    Tmodule *mod= p->do_parse();
     
  #if KInterpreterMode   
-    Runtime_Context *rc = new Runtime_Context();
 
-    for(int i=0;i<v.size();++i) {
-      Statement *st = v.at(i);
-      st->execute(rc);
-    }
+    vector<SymbolInfo *> d;
+    Runtime_Context *rc = new Runtime_Context();
+    mod->execute(rc,d);
+
  #else
+
+    Procedure *proc = mod->find_procedure("MAIN");
+    vector<Statement *> v = proc->statements;
      //generate top level code
      Execution_Context *rc = new Execution_Context();
      emit_top_level_code();

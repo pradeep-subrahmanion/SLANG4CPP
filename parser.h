@@ -1,32 +1,43 @@
+
+class TmoduleBuilder;
+class Tmodule;
+class ProcedureBuilder;
+
 #include "lexer.h"
 #include "context.h"
+
+
 using namespace std;
 
 class Parser:public Lexer
 {
 
 private:
-   Expression *expr(Compilation_Context *ctx);
-   Expression *term(Compilation_Context *ctx);
-   Expression *factor(Compilation_Context *ctx);
-   Expression* bexpr(Compilation_Context *ctx);
-   Expression* lexpr(Compilation_Context *ctx);
 
-   vector<Statement*> statement_list(Compilation_Context *ctx);
-   Statement *get_statement(Compilation_Context *ctx);
-   Statement *parse_print_statement(Compilation_Context *ctx);
-   Statement *parse_printline_statement(Compilation_Context *ctx);
-   Statement *parse_variabledcl_statement(Compilation_Context *ctx);
-   Statement *parse_assignment_statement(Compilation_Context *ctx);
-   Statement *parse_if_statement(Compilation_Context *ctx);
-   Statement *parse_while_statement(Compilation_Context *ctx);
+   TmoduleBuilder *module_builder;
+
+   Expression *expr(ProcedureBuilder *ctx);
+   Expression *term(ProcedureBuilder *ctx);
+   Expression *factor(ProcedureBuilder *ctx);
+   Expression* bexpr(ProcedureBuilder *ctx);
+   Expression* lexpr(ProcedureBuilder *ctx);
+
+   vector<Statement*> statement_list(ProcedureBuilder *ctx);
+   Statement *get_statement(ProcedureBuilder *ctx);
+   Statement *parse_print_statement(ProcedureBuilder *ctx);
+   Statement *parse_printline_statement(ProcedureBuilder *ctx);
+   Statement *parse_variabledcl_statement(ProcedureBuilder *ctx);
+   Statement *parse_assignment_statement(ProcedureBuilder *ctx);
+   Statement *parse_if_statement(ProcedureBuilder *ctx);
+   Statement *parse_while_statement(ProcedureBuilder *ctx);
 
 protected:
    Token get_next();
 
 public:
-   Expression *call_expression(Compilation_Context *ctx);
-   Parser(string str):Lexer(str){};
-   vector<Statement*> parse(Compilation_Context *ctx);
+   Expression *call_expression(ProcedureBuilder *ctx);
+   Parser(string str);
+   vector<Statement*> parse(ProcedureBuilder *ctx);
+   Tmodule *do_parse();
  
 };

@@ -1,12 +1,32 @@
 #include "parser.h"
+#include "builder.h"
+#include "compilation_unit.h"
 
-Expression *Parser::call_expression(Compilation_Context *ctx)
+Parser::Parser(string str):Lexer(str)
+{
+  module_builder = new TmoduleBuilder();
+}
+
+Tmodule *Parser::do_parse()
+{
+  ProcedureBuilder *pb = new ProcedureBuilder("MAIN", new Compilation_Context);
+  vector<Statement *> stmts = parse(pb);
+  
+  for(int i=0;i<stmts.size();++i) {
+    pb->add_statement(stmts.at(i));
+  }
+
+  module_builder->add_procedure(pb->get_procedure());
+  return module_builder->get_program();
+}
+
+Expression *Parser::call_expression(ProcedureBuilder *ctx)
 {
   current_token = get_token();
   return expr(ctx);
 }
 
-Expression* Parser::bexpr(Compilation_Context *ctx)
+Expression* Parser::bexpr(ProcedureBuilder *ctx)
 {
   Token l_token;
   Expression *retValue = lexpr(ctx);
@@ -21,7 +41,7 @@ Expression* Parser::bexpr(Compilation_Context *ctx)
  return retValue;
 
 }
-Expression* Parser::lexpr(Compilation_Context *ctx)
+Expression* Parser::lexpr(ProcedureBuilder *ctx)
 {
  Token l_token;
  Expression *ret = expr(ctx);
@@ -44,7 +64,7 @@ Expression* Parser::lexpr(Compilation_Context *ctx)
 
 }
 
-Expression *Parser::expr(Compilation_Context *ctx)
+Expression *Parser::expr(ProcedureBuilder *ctx)
 {
   Token l_token;
   Expression *result = term(ctx);
@@ -65,7 +85,7 @@ Expression *Parser::expr(Compilation_Context *ctx)
   return result;
 }
 
-Expression *Parser::term(Compilation_Context *ctx)
+Expression *Parser::term(ProcedureBuilder *ctx)
 {
   Token l_token;
   Expression *result = factor(ctx);
@@ -86,7 +106,7 @@ Expression *Parser::term(Compilation_Context *ctx)
   return result;
 }
 
-Expression *Parser::factor(Compilation_Context *ctx)
+Expression *Parser::factor(ProcedureBuilder *ctx)
 {
   Token l_token;
   Expression *result = NULL;
@@ -158,13 +178,13 @@ Token Parser::get_next()
   return current_token;
 }
 
-vector<Statement*> Parser::parse(Compilation_Context *ctx)
+vector<Statement*> Parser::parse(ProcedureBuilder *ctx)
 {
   get_next();
   return statement_list(ctx);
   
 }
-vector<Statement*> Parser::statement_list(Compilation_Context *ctx)
+vector<Statement*> Parser::statement_list(ProcedureBuilder *ctx)
 {
   vector<Statement*> temp;
   
@@ -182,7 +202,7 @@ vector<Statement*> Parser::statement_list(Compilation_Context *ctx)
   return temp;
 }
 
-Statement *Parser::get_statement(Compilation_Context *ctx)
+Statement *Parser::get_statement(ProcedureBuilder *ctx)
 {
   Statement *st =  NULL;
   switch(current_token) {
@@ -221,11 +241,11 @@ Statement *Parser::get_statement(Compilation_Context *ctx)
   }
   return st;
 }
-Statement *Parser::parse_print_statement(Compilation_Context *ctx)
+Statement *Parser::parse_print_statement(ProcedureBuilder *ctx)
 {
   get_next();
   Expression *e = bexpr(ctx);
-  e->typecheck(ctx);
+  e->typecheck(ctx->ctx);
  
   if(current_token != TOKEN_SEMI) {
     exit_with_message("\n; is expected\n");
@@ -233,11 +253,11 @@ Statement *Parser::parse_print_statement(Compilation_Context *ctx)
   PrintStatement *st =  new PrintStatement(e);
   return st;
 }
-Statement *Parser::parse_printline_statement(Compilation_Context *ctx)
+Statement *Parser::parse_printline_statement(ProcedureBuilder *ctx)
 {
   get_next();
   Expression *e = bexpr(ctx);
-  e->typecheck(ctx);
+  e->typecheck(ctx->ctx);
 
   if(current_token != TOKEN_SEMI) {
     exit_with_message("\n; is expected\n");
@@ -246,7 +266,7 @@ Statement *Parser::parse_printline_statement(Compilation_Context *ctx)
   PrintLineStatement *st = new PrintLineStatement(e);
   return st;
 }
-Statement *Parser::parse_variabledcl_statement(Compilation_Context *ctx)
+Statement *Parser::parse_variabledcl_statement(ProcedureBuilder *ctx)
 {
   Token token = current_token;
   get_next();
@@ -279,7 +299,7 @@ Statement *Parser::parse_variabledcl_statement(Compilation_Context *ctx)
   }
   return NULL;
 }
-Statement *Parser::parse_assignment_statement(Compilation_Context *ctx)
+Statement *Parser::parse_assignment_statement(ProcedureBuilder *ctx)
 {
   string var = last_string;
   
@@ -299,7 +319,7 @@ Statement *Parser::parse_assignment_statement(Compilation_Context *ctx)
   
   get_next();
   Expression *exp = bexpr(ctx);
-  if(exp->typecheck(ctx) != info->type) {
+  if(exp->typecheck(ctx->ctx) != info->type) {
     exit_with_message("Type Mismatch");
   }
   
@@ -318,14 +338,14 @@ Statement *Parser::parse_assignment_statement(Compilation_Context *ctx)
   return new AssignmentStatement(info,exp);
 }
 
-Statement *Parser::parse_if_statement(Compilation_Context *ctx) {
+Statement *Parser::parse_if_statement(ProcedureBuilder *ctx) {
   get_next();
   vector<Statement *> true_part;
   vector<Statement *> false_part;
 
   Expression *exp = bexpr(ctx);
 
-  if(exp->typecheck(ctx) != TYPE_BOOL) {
+  if(exp->typecheck(ctx->ctx) != TYPE_BOOL) {
     exit_with_message("Expected boolean expression");
   }
 
@@ -354,12 +374,12 @@ Statement *Parser::parse_if_statement(Compilation_Context *ctx) {
   exit_with_message("ENDIF expected");
 }
 
-Statement *Parser::parse_while_statement(Compilation_Context *ctx) {
+Statement *Parser::parse_while_statement(ProcedureBuilder *ctx) {
   get_next();
   vector<Statement *> stmts;
   Expression *exp = bexpr(ctx);
 
-  if(exp->typecheck(ctx) != TYPE_BOOL) {
+  if(exp->typecheck(ctx->ctx) != TYPE_BOOL) {
     exit_with_message("Expected boolean expression");
   }
 
