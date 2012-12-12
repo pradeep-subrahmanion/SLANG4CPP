@@ -55,6 +55,9 @@ Lexer::Lexer(string input_str)
   value_table[10] = new ValueTable(TOKEN_ELSE,"ELSE");
   value_table[11] = new ValueTable(TOKEN_ENDIF,"ENDIF");
   value_table[12] = new ValueTable(TOKEN_THEN,"THEN");
+  value_table[13] = new ValueTable(TOKEN_END,"END");
+  value_table[14] = new ValueTable(TOKEN_FUNCTION,"FUNCTION");
+  value_table[15] = new ValueTable(TOKEN_RETURN,"RETURN");
 }
 
 Token Lexer::get_token()
@@ -93,6 +96,10 @@ start:
       break;
     case '(':
       token = TOKEN_OPAREN;
+      index++;
+      break;
+    case ',':
+      token = TOKEN_COMMA;
       index++;
       break;
     case ')':

@@ -3,7 +3,7 @@
 #include "ast_statement.h"
 using namespace std;
 
-#define KEYWORDS_COUNT 13
+#define KEYWORDS_COUNT 16
 
 class ValueTable
 {

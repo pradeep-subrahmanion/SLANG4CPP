@@ -9,15 +9,184 @@ Parser::Parser(string str):Lexer(str)
 
 Tmodule *Parser::do_parse()
 {
-  ProcedureBuilder *pb = new ProcedureBuilder("MAIN", new Compilation_Context);
-  vector<Statement *> stmts = parse(pb);
-  
-  for(int i=0;i<stmts.size();++i) {
-    pb->add_statement(stmts.at(i));
+ get_next();
+ return parse_functions();
+}
+
+Tmodule * Parser::parse_functions()
+{
+
+  while(current_token == TOKEN_FUNCTION) {
+
+    ProcedureBuilder *pb = parse_function();
+
+    if(pb != NULL) {
+
+     Procedure *proc = pb->get_procedure();   
+
+      if(proc == NULL) {
+        exit_with_message("Error while parsing functions");
+        return NULL;
+      }
+    
+      module_builder->add_procedure(proc);
+      get_next();
+    }
+
+    else {
+        exit_with_message("Error while parsing functions");
+    }
+
   }
 
-  module_builder->add_procedure(pb->get_procedure());
   return module_builder->get_program();
+}
+
+ProcedureBuilder * Parser::parse_function()
+{
+  ProcedureBuilder *pb = new ProcedureBuilder("", new Compilation_Context()); 
+  if(current_token != TOKEN_FUNCTION) {
+    exit_with_message("Error while parsing function");
+  }
+  
+  get_next();
+
+  if(current_token == TOKEN_VAR_NUMBER) {
+    pb->type = TYPE_NUMERIC;
+  }
+  else if(current_token == TOKEN_VAR_STRING) {
+    pb->type = TYPE_STRING;
+  }
+  else if(current_token == TOKEN_VAR_BOOL) {
+    pb->type = TYPE_BOOL;
+  }
+  else {
+    exit_with_message("Error while parsing function");
+  }
+
+  get_next();
+  if(current_token == TOKEN_UNQUOTED_STRING) {
+    pb->proc_name = last_string;
+  }
+  else {
+   exit_with_message("Error while parsing function");
+  }
+  
+  get_next();
+  
+  if (current_token == TOKEN_OPAREN) {
+    formal_parameters(pb);
+  }
+  else {
+   exit_with_message("Error while parsing function");
+  }
+
+  if (current_token != TOKEN_CPAREN) {
+   exit_with_message("Error while parsing function");
+  }
+
+  get_next();
+  vector<Statement *>list = statement_list(pb);
+  if(current_token != TOKEN_END) {
+    exit_with_message("END expected");
+  }
+
+  for(int i=0; i<list.size();++i) {
+    pb->add_statement(list.at(i));
+  }
+
+  return pb;
+}
+
+
+void Parser::formal_parameters(ProcedureBuilder *ctx)
+{
+  
+  if (current_token != TOKEN_OPAREN) {
+    exit_with_message("Opening parenthesis expected");
+  }
+
+  get_next();
+  vector<TypeInfo> list_types;
+
+  while(current_token == TOKEN_VAR_NUMBER || current_token == TOKEN_VAR_STRING
+    || current_token == TOKEN_VAR_BOOL) {
+
+    SymbolInfo *info = new SymbolInfo();
+    if(current_token == TOKEN_VAR_NUMBER) {
+      info->type = TYPE_NUMERIC;
+    }
+    else if(current_token == TOKEN_VAR_STRING) {
+      info->type = TYPE_STRING;
+    }
+    else if(current_token == TOKEN_VAR_BOOL) {
+      info->type = TYPE_BOOL;
+    }
+
+    get_next();
+    if(current_token != TOKEN_UNQUOTED_STRING) {
+      exit_with_message("Variable name expected");
+    }
+    info->symbol_name = last_string;
+    list_types.push_back(info->type);
+    ctx->add_local(info);
+    ctx->add_formals(info);
+
+    get_next();
+    if(current_token != TOKEN_COMMA) {
+      break; 
+    }
+    get_next();
+  }
+  module_builder->add_function_prototypes(ctx->proc_name, ctx->type, list_types);
+}
+
+
+Expression *Parser::parse_callproc(ProcedureBuilder *ctx, Procedure *p)
+{
+
+  Expression *ret = NULL;
+  vector<Expression *>_actuals;
+  get_next();
+
+  if (current_token != TOKEN_OPAREN) {
+    exit_with_message("Opening parenthesis expected");
+  }
+
+  get_next();
+
+  if(current_token == TOKEN_CPAREN) {
+    return  new CallExpression(ctx->proc_name,_actuals,true);
+  }
+
+
+  while(true) {
+    Expression *exp = bexpr(ctx);
+    exp->typecheck(ctx->ctx);
+
+    if(current_token == TOKEN_COMMA) {
+      _actuals.push_back(exp);
+      get_next();
+      continue;
+    }
+
+    if(current_token != TOKEN_CPAREN) {
+     exit_with_message("Closing parenthesis expected");
+    }
+    else {
+      _actuals.push_back(exp);
+      break;
+    }
+  }
+
+  if(p != NULL) {
+    ret =  new CallExpression(p,_actuals);
+  }
+  else {
+    ret =  new CallExpression(ctx->proc_name,_actuals,true);
+  }
+
+  return ret;
 }
 
 Expression *Parser::call_expression(ProcedureBuilder *ctx)
@@ -155,14 +324,23 @@ Expression *Parser::factor(ProcedureBuilder *ctx)
     
   }
   else if(current_token == TOKEN_UNQUOTED_STRING) {
-    SymbolInfo *info = ctx->get_symbol(last_string);
-    if(info == NULL) {
-      exit_with_message("Undefined Symbol");
-      return NULL;
+    if(module_builder->is_function(last_string)) {
+      Procedure *p = module_builder->get_procedure(last_string);
+      Expression *e = parse_callproc(ctx,p);
+      get_next();
+      return e;
     }
+    else {
+       SymbolInfo *info = ctx->get_symbol(last_string);
+       if(info == NULL) {
+        exit_with_message("Undefined Symbol");
+        return NULL;
+       }
     
-    get_next();
-    result = new Variable(info);
+      get_next();
+      result = new Variable(info);
+    }
+
   }
   else {
     exit_with_message("Illegal token - " );
@@ -191,7 +369,8 @@ vector<Statement*> Parser::statement_list(ProcedureBuilder *ctx)
   while(current_token != TOKEN_NULL && 
         current_token != TOKEN_ENDIF && 
         current_token != TOKEN_ENDWHILE && 
-        current_token != TOKEN_ELSE ) {
+        current_token != TOKEN_ELSE && 
+        current_token != TOKEN_END) {
     Statement *st = get_statement(ctx);
     if(st != NULL) {
       temp.insert(temp.end(),st);
@@ -233,6 +412,10 @@ Statement *Parser::get_statement(ProcedureBuilder *ctx)
       st = parse_assignment_statement(ctx);
       get_next();
       break;
+    case TOKEN_RETURN:
+      st = parse_return_statement(ctx);
+      get_next();
+      break;
     default:
       exit_with_message("Exception in statement");
       get_next();
@@ -241,6 +424,22 @@ Statement *Parser::get_statement(ProcedureBuilder *ctx)
   }
   return st;
 }
+
+Statement *Parser::parse_return_statement(ProcedureBuilder *ctx)
+{
+  Statement *st = NULL;
+  get_next();
+  Expression *e = bexpr(ctx);
+
+  if(e == NULL) {
+    exit_with_message("Error in return statement");
+  }
+
+  ctx->type_check(e);
+  st = new ReturnStatement(e);
+  return st; 
+}
+
 Statement *Parser::parse_print_statement(ProcedureBuilder *ctx)
 {
   get_next();

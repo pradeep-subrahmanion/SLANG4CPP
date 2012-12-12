@@ -8,15 +8,19 @@
 #include "codegen.h"
 #include "symbol_table.h"
 
+class Tmodule;
 
 using namespace llvm;
 
 class Runtime_Context
 {
 	SymbolInfoTable *st;
+  Tmodule *prog;
   
 public:
 	Runtime_Context();
+  Runtime_Context(Tmodule *mod);
+  Tmodule *get_program();
 	SymbolInfoTable *get_symboltable();
 	void set_symboltable(SymbolInfoTable *_st);
   void add_symbol(SymbolInfo *info);

@@ -4,6 +4,7 @@
 class Runtime_Context;
 class Compilation_Context;
 class Execution_Context;
+class Procedure;
 
 #include "common.h"
 #include "codegen.h"
@@ -214,6 +215,24 @@ public:
   string evaluate_string(Execution_Context *ctx){};
 };
 
+class CallExpression: public Expression
+{ 
+  Procedure *proc;
+  vector<Expression *> actuals;
+  string procname;
+  bool isrecurse;
+  TypeInfo type;
+
+public:
+  CallExpression(Procedure *_proc, vector<Expression *> _actuals);
+  CallExpression(string _name, vector<Expression *>_actuals, bool _isrecurse);
+  SymbolInfo *evaluate(Runtime_Context *ctx);
+	TypeInfo typecheck(Compilation_Context *ctx);
+	TypeInfo get_type();
+  Value *codegen(Execution_Context *ctx);  
+  string evaluate_string(Execution_Context *ctx){};
+
+};
 
 
 #endif

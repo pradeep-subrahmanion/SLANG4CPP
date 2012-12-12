@@ -308,3 +308,19 @@ Value* WhileStatement::codegen(Execution_Context *ctx)
   return PN;
 }
 
+ReturnStatement::ReturnStatement(Expression *_exp)
+{
+  exp = _exp;
+}
+
+SymbolInfo *ReturnStatement::execute(Runtime_Context *ctx)
+{
+  info = exp->evaluate(ctx);
+  return info;
+}
+
+Value* ReturnStatement::codegen(Execution_Context *ctx)
+{
+  return NULL;
+}
+

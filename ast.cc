@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "common.h"
 #include "context.h"
+#include "compilation_unit.h"
 
 using namespace CodeGen;
 
@@ -787,3 +788,54 @@ Value *LogicalNot::codegen(Execution_Context *ctx)
   return emit_not_instruction(val);
 }
 
+CallExpression::CallExpression(Procedure *_proc, vector<Expression *> _actuals)
+{
+  proc = _proc;
+  actuals = _actuals;
+}
+CallExpression::CallExpression(string _name,vector<Expression *> _actuals, bool _isrecurse)
+{
+  procname = _name;
+  proc = NULL;
+  actuals = _actuals;
+  isrecurse = _isrecurse;
+}
+SymbolInfo * CallExpression::evaluate(Runtime_Context *ctx)
+{
+  if(proc == NULL) {
+
+    Tmodule *mod = ctx->get_program();
+    if(mod == NULL) {
+      exit_with_message("no module");
+    }
+    proc = mod->find_procedure(procname);
+
+    if(proc == NULL) {
+      exit_with_message("recursion error");
+    }
+  }
+
+  Runtime_Context *ctx1 = new Runtime_Context(ctx->get_program());
+  vector<SymbolInfo *> list;
+  for(int i=0;i<actuals.size();++i) {
+     SymbolInfo *info = actuals.at(i)->evaluate(ctx);
+     list.push_back(info);
+  }
+
+ return proc->execute(ctx1,list);    
+}
+
+TypeInfo CallExpression::typecheck(Compilation_Context *ctx)
+{
+  if(proc != NULL) {
+    return proc->typecheck(ctx);
+  }
+}
+TypeInfo CallExpression::get_type()
+{
+  return type;
+}
+Value *CallExpression::codegen(Execution_Context *ctx)
+{
+  return NULL;
+}

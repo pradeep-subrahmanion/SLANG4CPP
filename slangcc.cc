@@ -52,6 +52,10 @@ int main(int argc, char **argv)
         
     Parser *p = new Parser(program_str);
     Tmodule *mod= p->do_parse();
+
+    if(mod == NULL ) {
+      exit_with_message("Error while parsing functions");
+    }
     
  #if KInterpreterMode   
 

@@ -81,7 +81,14 @@ typedef enum {
   TOKEN_ELSE,
   TOKEN_ENDIF,
   TOKEN_WHILE,
-  TOKEN_ENDWHILE
+  TOKEN_ENDWHILE,
+
+// Function support
+
+  TOKEN_FUNCTION,
+  TOKEN_END,
+  TOKEN_RETURN,
+  TOKEN_COMMA
 
   
 }Token;

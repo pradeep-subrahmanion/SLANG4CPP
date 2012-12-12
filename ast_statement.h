@@ -82,3 +82,14 @@ public:
 
 };
 
+class ReturnStatement: public Statement
+{
+  Expression *exp;
+  SymbolInfo *info;
+
+public:
+  ReturnStatement(Expression *_exp);
+  SymbolInfo *execute(Runtime_Context *ctx);
+  Value* codegen(Execution_Context *ctx);
+};
+

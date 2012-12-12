@@ -1,5 +1,5 @@
 #include "context.h"
-
+#include "compilation_unit.h"
 
 // Runtime Context
 
@@ -7,6 +7,16 @@ Runtime_Context::Runtime_Context()
 {
   st= new SymbolInfoTable();
 };
+
+Runtime_Context::Runtime_Context(Tmodule *mod)
+{
+  prog = mod;
+  st= new SymbolInfoTable();
+}
+Tmodule *Runtime_Context::get_program()
+{
+  return prog;
+}
 
 SymbolInfoTable *Runtime_Context::get_symboltable()
 {
