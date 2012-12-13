@@ -793,12 +793,13 @@ CallExpression::CallExpression(Procedure *_proc, vector<Expression *> _actuals)
   proc = _proc;
   actuals = _actuals;
 }
-CallExpression::CallExpression(string _name,vector<Expression *> _actuals, bool _isrecurse)
+CallExpression::CallExpression(string _name,vector<Expression *> _actuals, bool _isrecurse, TypeInfo _type)
 {
   procname = _name;
   proc = NULL;
   actuals = _actuals;
   isrecurse = _isrecurse;
+  type = _type;
 }
 SymbolInfo * CallExpression::evaluate(Runtime_Context *ctx)
 {
@@ -806,12 +807,12 @@ SymbolInfo * CallExpression::evaluate(Runtime_Context *ctx)
 
     Tmodule *mod = ctx->get_program();
     if(mod == NULL) {
-      exit_with_message("no module");
+      exit_with_message("Error in function call");
     }
+ 
     proc = mod->find_procedure(procname);
-
     if(proc == NULL) {
-      exit_with_message("recursion error");
+      exit_with_message("Error in function call");
     }
   }
 
@@ -830,6 +831,7 @@ TypeInfo CallExpression::typecheck(Compilation_Context *ctx)
   if(proc != NULL) {
     return proc->typecheck(ctx);
   }
+  return type;
 }
 TypeInfo CallExpression::get_type()
 {

@@ -144,7 +144,7 @@ void Parser::formal_parameters(ProcedureBuilder *ctx)
 
 Expression *Parser::parse_callproc(ProcedureBuilder *ctx, Procedure *p)
 {
-
+  string funcName = last_string;
   Expression *ret = NULL;
   vector<Expression *>_actuals;
   get_next();
@@ -156,7 +156,17 @@ Expression *Parser::parse_callproc(ProcedureBuilder *ctx, Procedure *p)
   get_next();
 
   if(current_token == TOKEN_CPAREN) {
-    return  new CallExpression(ctx->proc_name,_actuals,true);
+    if(p != NULL) {
+      ret =  new CallExpression(p,_actuals);
+    }
+
+    else {
+      if(ctx ->proc_name.compare(last_string) == 0) {
+         ret =  new CallExpression(ctx->proc_name,_actuals,true,ctx->type);
+      }
+    }
+
+    return ret;
   }
 
 
@@ -177,14 +187,18 @@ Expression *Parser::parse_callproc(ProcedureBuilder *ctx, Procedure *p)
       _actuals.push_back(exp);
       break;
     }
+
   }
 
   if(p != NULL) {
     ret =  new CallExpression(p,_actuals);
   }
   else {
-    ret =  new CallExpression(ctx->proc_name,_actuals,true);
-  }
+
+      if(ctx ->proc_name.compare(funcName) == 0) {
+         ret =  new CallExpression(ctx->proc_name,_actuals,true,ctx->type);
+      }
+    }
 
   return ret;
 }
@@ -519,6 +533,7 @@ Statement *Parser::parse_assignment_statement(ProcedureBuilder *ctx)
   get_next();
   Expression *exp = bexpr(ctx);
   if(exp->typecheck(ctx->ctx) != info->type) {
+    cout << "var type is " << info->type << "func type is" << exp->typecheck(ctx->ctx)<<"\n";
     exit_with_message("Type Mismatch");
   }
   

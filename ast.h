@@ -225,7 +225,7 @@ class CallExpression: public Expression
 
 public:
   CallExpression(Procedure *_proc, vector<Expression *> _actuals);
-  CallExpression(string _name, vector<Expression *>_actuals, bool _isrecurse);
+  CallExpression(string _name, vector<Expression *>_actuals, bool _isrecurse, TypeInfo _type);
   SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
 	TypeInfo get_type();

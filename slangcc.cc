@@ -60,7 +60,7 @@ int main(int argc, char **argv)
  #if KInterpreterMode   
 
     vector<SymbolInfo *> d;
-    Runtime_Context *rc = new Runtime_Context();
+    Runtime_Context *rc = new Runtime_Context(mod);
     mod->execute(rc,d);
 
  #else

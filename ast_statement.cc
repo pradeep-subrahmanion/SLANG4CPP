@@ -144,6 +144,8 @@ SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
 {
   SymbolInfo *info  = condition->evaluate(ctx);
 
+  SymbolInfo *ret = NULL;
+
   if(info->type == TYPE_BOOL) {
 
       vector<Statement *> *statements = &if_statements;
@@ -153,7 +155,10 @@ SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
 
       for(int i=0;i<(*statements).size();++i) {
         Statement *st = (*statements).at(i);
-        st->execute(ctx);
+        ret = st->execute(ctx);
+        if(ret != NULL) {
+          return ret;
+        }
       }
 
   }
@@ -240,7 +245,7 @@ WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v)
 }
 SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
 {
-
+  SymbolInfo *ret = NULL;
   SymbolInfo *info  = condition->evaluate(ctx);
 
   while(info->type == TYPE_BOOL && info->bool_val == true) {
@@ -248,6 +253,9 @@ SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
       for(int i=0;i<statements.size();++i) {
         Statement *st = statements.at(i);
         st->execute(ctx);
+        if(ret != NULL) {
+          return ret;
+        }
       }
 
     info = condition->evaluate(ctx);
