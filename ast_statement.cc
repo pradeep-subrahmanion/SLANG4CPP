@@ -332,3 +332,18 @@ Value* ReturnStatement::codegen(Execution_Context *ctx)
   return NULL;
 }
 
+CallStatement::CallStatement(Expression *_exp)
+{
+  exp = _exp;
+}
+
+SymbolInfo *CallStatement::execute(Runtime_Context *ctx)
+{
+  return exp->evaluate(ctx);
+}
+
+Value* CallStatement::codegen(Execution_Context *ctx)
+{
+
+}
+

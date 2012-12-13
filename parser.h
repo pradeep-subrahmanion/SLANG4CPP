@@ -32,6 +32,9 @@ private:
    Statement *parse_if_statement(ProcedureBuilder *ctx);
    Statement *parse_while_statement(ProcedureBuilder *ctx);
    Statement *parse_return_statement(ProcedureBuilder *ctx);
+   Statement *parse_call_statement(ProcedureBuilder *ctx);
+   Statement *parse_unquoted_string(ProcedureBuilder *ctx);
+
   
    ProcedureBuilder *parse_function();
    void formal_parameters(ProcedureBuilder *ctx);

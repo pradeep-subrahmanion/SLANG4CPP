@@ -423,7 +423,7 @@ Statement *Parser::get_statement(ProcedureBuilder *ctx)
       break;
   
     case TOKEN_UNQUOTED_STRING:
-      st = parse_assignment_statement(ctx);
+      st = parse_unquoted_string(ctx);
       get_next();
       break;
     case TOKEN_RETURN:
@@ -439,6 +439,45 @@ Statement *Parser::get_statement(ProcedureBuilder *ctx)
   return st;
 }
 
+Statement * Parser::parse_unquoted_string(ProcedureBuilder *ctx)
+{
+ Statement *st  = NULL;
+ string var = last_string;
+ SymbolInfo *info = ctx->get_symbol(var);
+
+ if(info == NULL) {
+  st = parse_call_statement(ctx);
+
+  if(st == NULL) {
+    exit_with_message("Not a valid statement");
+  }
+
+ }
+ else {
+  st = parse_assignment_statement(ctx);
+ }
+
+  return st;
+}
+Statement *Parser::parse_call_statement(ProcedureBuilder *ctx)
+{
+  if(module_builder->is_function(last_string)) {
+    Procedure *p = module_builder->get_procedure(last_string);
+    Expression *e = parse_callproc(ctx,p);
+    get_next();
+
+    if(current_token != TOKEN_SEMI) {
+      exit_with_message("\n; is expected\n");
+    }
+
+    CallStatement *st =  new CallStatement(e);
+    return st;
+      
+   }
+
+  return NULL;
+
+}
 Statement *Parser::parse_return_statement(ProcedureBuilder *ctx)
 {
   Statement *st = NULL;

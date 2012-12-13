@@ -93,3 +93,12 @@ public:
   Value* codegen(Execution_Context *ctx);
 };
 
+class CallStatement: public Statement
+{
+  Expression *exp;
+
+public:
+  CallStatement(Expression *_exp);
+  SymbolInfo *execute(Runtime_Context *ctx);
+  Value* codegen(Execution_Context *ctx);
+};
