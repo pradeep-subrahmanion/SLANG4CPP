@@ -177,7 +177,7 @@ class RelationalExpression: public Expression {
 	RelationalOperator optr;
 
 public:
-			RelationalExpression(Expression *e1, Expression *e2,
+	RelationalExpression(Expression *e1, Expression *e2,
 					RelationalOperator _op);
 	SymbolInfo *evaluate(Runtime_Context *ctx);
 	TypeInfo typecheck(Compilation_Context *ctx);
