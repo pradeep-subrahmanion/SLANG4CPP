@@ -1,4 +1,3 @@
-
 #include "common.h"
 #include "ast_statement.h"
 #include "codegen.h"
@@ -8,342 +7,316 @@ using namespace CodeGen;
 
 // Print Statement
 
-PrintStatement:: PrintStatement(Expression *_exp)
-{
-  exp = _exp;
+PrintStatement::PrintStatement(Expression *_exp) {
+	exp = _exp;
 }
 
-SymbolInfo *PrintStatement:: execute(Runtime_Context *ctx)
-{
-  SymbolInfo *info = exp->evaluate(ctx);
-  
-  if(info->type == TYPE_STRING) {
-    std::cout << info->string_val;
-  }
-  else if(info->type == TYPE_NUMERIC) {
-    std::cout << info->double_val;
-  }
-  else if(info->type == TYPE_BOOL) {
-    std::cout << info->bool_val;
-  }
-  
-  return NULL;
+SymbolInfo *PrintStatement::execute(Runtime_Context *ctx) {
+	SymbolInfo *info = exp->evaluate(ctx);
+
+	if (info->type == TYPE_STRING) {
+		std::cout << info->string_val;
+	} else if (info->type == TYPE_NUMERIC) {
+		std::cout << info->double_val;
+	} else if (info->type == TYPE_BOOL) {
+		std::cout << info->bool_val;
+	}
+
+	return NULL;
 }
 
-PrintStatement:: ~PrintStatement()
-{
-  
+PrintStatement::~PrintStatement() {
+
 }
 
-Value* PrintStatement::codegen(Execution_Context *ctx)
-{
-  
-  Value *val = exp->codegen(ctx);
-  TypeInfo type= exp->get_type();
-  emit_print_stmt(val,type);
-  return NULL;
+Value* PrintStatement::codegen(Execution_Context *ctx) {
+
+	Value *val = exp->codegen(ctx);
+	TypeInfo type = exp->get_type();
+	emit_print_stmt(val, type);
+	return NULL;
 
 }
 //PrintLine Statement
 
-PrintLineStatement:: PrintLineStatement(Expression *_exp)
-{
-  exp = _exp;
+PrintLineStatement::PrintLineStatement(Expression *_exp) {
+	exp = _exp;
 }
 
-SymbolInfo * PrintLineStatement:: execute(Runtime_Context *ctx)
-{
-  SymbolInfo *info = exp->evaluate(ctx);
-  if(info->type == TYPE_STRING) {
-    std::cout << info->string_val << "\n";
-  }
-  else if(info->type == TYPE_NUMERIC) {
-    std::cout << info->double_val << "\n";
-  }
-  else if(info->type == TYPE_BOOL) {
-    std::cout << info->bool_val << "\n";
-  }
-  
-  return NULL;
+SymbolInfo * PrintLineStatement::execute(Runtime_Context *ctx) {
+	SymbolInfo *info = exp->evaluate(ctx);
+	if (info->type == TYPE_STRING) {
+		std::cout << info->string_val << "\n";
+	} else if (info->type == TYPE_NUMERIC) {
+		std::cout << info->double_val << "\n";
+	} else if (info->type == TYPE_BOOL) {
+		std::cout << info->bool_val << "\n";
+	}
+
+	return NULL;
 }
 
-PrintLineStatement:: ~PrintLineStatement()
-{
-  
+PrintLineStatement::~PrintLineStatement() {
+
 }
 
-Value* PrintLineStatement::codegen(Execution_Context *ctx)
-{
-  Value *val = exp->codegen(ctx);
-  TypeInfo type= exp->get_type();
-  emit_printline_stmt(val,type);
-  return NULL;
+Value* PrintLineStatement::codegen(Execution_Context *ctx) {
+	Value *val = exp->codegen(ctx);
+	TypeInfo type = exp->get_type();
+	emit_printline_stmt(val, type);
+	return NULL;
 }
 
 // Variable Declaration
 
-VariableDeclStatement::VariableDeclStatement(SymbolInfo *_info)
-{
-  info = _info;
+VariableDeclStatement::VariableDeclStatement(SymbolInfo *_info) {
+	info = _info;
 }
-SymbolInfo *VariableDeclStatement::execute(Runtime_Context *ctx)
-{
-  ctx->add_symbol(info);
-  var = new Variable(info);
-  return NULL;
+SymbolInfo *VariableDeclStatement::execute(Runtime_Context *ctx) {
+	ctx->add_symbol(info);
+	var = new Variable(info);
+	return NULL;
 }
 
-Value* VariableDeclStatement::codegen(Execution_Context *ctx)
-{
-  string name = info->symbol_name;
-  AllocaInst *alcInst = emit_stack_variable(info);
-  ctx->add_symbol(info->symbol_name,alcInst);
+Value* VariableDeclStatement::codegen(Execution_Context *ctx) {
+	string name = info->symbol_name;
+	AllocaInst *alcInst = emit_stack_variable(info);
+	ctx->add_symbol(info->symbol_name, alcInst);
 
-  return NULL;
+	return NULL;
 }
 
 // Assignment Statement
 
-AssignmentStatement::AssignmentStatement(Variable *_var, Expression *_exp)
-{
-  var = _var;
-  exp = _exp;
+AssignmentStatement::AssignmentStatement(Variable *_var, Expression *_exp) {
+	var = _var;
+	exp = _exp;
 }
-AssignmentStatement::AssignmentStatement(SymbolInfo *info, Expression *_exp)
-{
-  var = new Variable(info);
-  exp = _exp;
+AssignmentStatement::AssignmentStatement(SymbolInfo *info, Expression *_exp) {
+	var = new Variable(info);
+	exp = _exp;
 }
 
-SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx)
-{
-  SymbolInfo *info = exp->evaluate(ctx);
-  ctx->assign_symbol(var,info);
-  return NULL;
+SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx) {
+	SymbolInfo *info = exp->evaluate(ctx);
+	ctx->assign_symbol(var, info);
+	return NULL;
 }
 
-Value* AssignmentStatement::codegen(Execution_Context *ctx)
-{
-  Value *v = exp->codegen(ctx);
-  AllocaInst *alcInst = ctx->get_symbol(var->get_name());
-  emit_store_Instruction(alcInst,v);
-  return NULL;
+Value* AssignmentStatement::codegen(Execution_Context *ctx) {
+	Value *v = exp->codegen(ctx);
+	AllocaInst *alcInst = ctx->get_symbol(var->get_name());
+	emit_store_Instruction(alcInst, v);
+	return NULL;
 }
-
 
 //If Statement
 
-IfStatement::IfStatement(Expression *_exp, vector<Statement *> v1,vector<Statement *> v2 )
-{
-  condition = _exp;
-  if_statements = v1;
-  else_statements = v2;
+IfStatement::IfStatement(Expression *_exp, vector<Statement *> v1, vector<
+		Statement *> v2) {
+	condition = _exp;
+	if_statements = v1;
+	else_statements = v2;
 }
 
-SymbolInfo *IfStatement::execute(Runtime_Context *ctx)
-{
-  SymbolInfo *info  = condition->evaluate(ctx);
+SymbolInfo *IfStatement::execute(Runtime_Context *ctx) {
+	SymbolInfo *info = condition->evaluate(ctx);
 
-  SymbolInfo *ret = NULL;
+	SymbolInfo *ret = NULL;
 
-  if(info->type == TYPE_BOOL) {
+	if (info->type == TYPE_BOOL) {
 
-      vector<Statement *> *statements = &if_statements;
-      if(info->bool_val == false) {
-         statements= &else_statements;
-      }
+		vector<Statement *> *statements = &if_statements;
+		if (info->bool_val == false) {
+			statements = &else_statements;
+		}
 
-      for(int i=0;i<(*statements).size();++i) {
-        Statement *st = (*statements).at(i);
-        ret = st->execute(ctx);
-        if(ret != NULL) {
-          return ret;
-        }
-      }
+		for (int i = 0; i < (*statements).size(); ++i) {
+			Statement *st = (*statements).at(i);
+			ret = st->execute(ctx);
+			if (ret != NULL) {
+				return ret;
+			}
+		}
 
-  }
+	}
 
-  return NULL;
+	return NULL;
 }
 
-Value* IfStatement::codegen(Execution_Context *ctx)
-{
-  Value *condV = condition->codegen(ctx);
+Value* IfStatement::codegen(Execution_Context *ctx) {
+	Value *condV = condition->codegen(ctx);
 
-  Value *thenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
-  Value *elseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
+	Value *thenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
+	Value *elseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
 
-  if (condV == NULL) {cout <<"null";return 0;};
+	if (condV == NULL) {
+		cout << "null";
+		return 0;
+	};
 
-  // Create condition ,single bit integer is used since relational operators returns bool
- 
-  condV = builder.CreateICmpEQ(condV,
-                              ConstantInt::get(getGlobalContext(), APInt(1,1)),
-                                "ifcond");
+	// Create condition ,single bit integer is used since relational operators returns bool
 
-  Function *TheFunction = builder.GetInsertBlock()->getParent();
+	condV = builder.CreateICmpEQ(condV, ConstantInt::get(getGlobalContext(),
+			APInt(1, 1)), "ifcond");
 
-  // create block for if , else and merge blocks
+	Function *TheFunction = builder.GetInsertBlock()->getParent();
 
-  BasicBlock *thenBB =  BasicBlock::Create(getGlobalContext(), "then", TheFunction);
-  BasicBlock *elseBB =  BasicBlock::Create(getGlobalContext(), "else");
-  BasicBlock *mergeBB = BasicBlock::Create(getGlobalContext(), "merge");
+	// create block for if , else and merge blocks
 
-  builder.CreateCondBr(condV, thenBB, elseBB);
+	BasicBlock *thenBB = BasicBlock::Create(getGlobalContext(), "then",
+			TheFunction);
+	BasicBlock *elseBB = BasicBlock::Create(getGlobalContext(), "else");
+	BasicBlock *mergeBB = BasicBlock::Create(getGlobalContext(), "merge");
 
-  builder.SetInsertPoint(thenBB);
+	builder.CreateCondBr(condV, thenBB, elseBB);
 
-  // emit code for all statements in if
+	builder.SetInsertPoint(thenBB);
 
-  for(int i=0;i<if_statements.size();++i) {
-    
-    Statement *st = if_statements.at(i);
-    st->codegen(ctx);
-  }
+	// emit code for all statements in if
 
-  builder.CreateBr(mergeBB);
+	for (int i = 0; i < if_statements.size(); ++i) {
 
-  thenBB = builder.GetInsertBlock();
+		Statement *st = if_statements.at(i);
+		st->codegen(ctx);
+	}
 
-  TheFunction->getBasicBlockList().push_back(elseBB);
-  builder.SetInsertPoint(elseBB);
+	builder.CreateBr(mergeBB);
 
-  // emit code for all statements in else
+	thenBB = builder.GetInsertBlock();
 
-  for(int i=0;i<else_statements.size();++i) {
-    
-    Statement *st = else_statements.at(i);
-    st->codegen(ctx);
-  }
+	TheFunction->getBasicBlockList().push_back(elseBB);
+	builder.SetInsertPoint(elseBB);
 
-  builder.CreateBr(mergeBB);
+	// emit code for all statements in else
 
-  elseBB = builder.GetInsertBlock();
+	for (int i = 0; i < else_statements.size(); ++i) {
 
-  // Emit merge block.
+		Statement *st = else_statements.at(i);
+		st->codegen(ctx);
+	}
 
-  TheFunction->getBasicBlockList().push_back(mergeBB);
-  builder.SetInsertPoint(mergeBB);
+	builder.CreateBr(mergeBB);
 
-  //insert PHI node
+	elseBB = builder.GetInsertBlock();
 
-  PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2,
-                                  "iftmp");
+	// Emit merge block.
 
-  PN->addIncoming(thenV, thenBB);
-  PN->addIncoming(elseV, elseBB);
-  return PN;
+	TheFunction->getBasicBlockList().push_back(mergeBB);
+	builder.SetInsertPoint(mergeBB);
+
+	//insert PHI node
+
+	PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2,
+			"iftmp");
+
+	PN->addIncoming(thenV, thenBB);
+	PN->addIncoming(elseV, elseBB);
+	return PN;
 
 }
 
 // While Statement
 
-WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v)
-{
-  condition = _exp;
-  statements = v;
+WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v) {
+	condition = _exp;
+	statements = v;
 }
-SymbolInfo *WhileStatement::execute(Runtime_Context *ctx)
-{
-  SymbolInfo *ret = NULL;
-  SymbolInfo *info  = condition->evaluate(ctx);
+SymbolInfo *WhileStatement::execute(Runtime_Context *ctx) {
+	SymbolInfo *ret = NULL;
+	SymbolInfo *info = condition->evaluate(ctx);
 
-  while(info->type == TYPE_BOOL && info->bool_val == true) {
+	while (info->type == TYPE_BOOL && info->bool_val == true) {
 
-      for(int i=0;i<statements.size();++i) {
-        Statement *st = statements.at(i);
-        st->execute(ctx);
-        if(ret != NULL) {
-          return ret;
-        }
-      }
+		for (int i = 0; i < statements.size(); ++i) {
+			Statement *st = statements.at(i);
+			st->execute(ctx);
+			if (ret != NULL) {
+				return ret;
+			}
+		}
 
-    info = condition->evaluate(ctx);
-  }
+		info = condition->evaluate(ctx);
+	}
 
-  return NULL;
+	return NULL;
 }
 
-Value* WhileStatement::codegen(Execution_Context *ctx)
-{
+Value* WhileStatement::codegen(Execution_Context *ctx) {
 
- //
- // Create blocks for loop header , body and exit . 
- // make explicit branch to loop header , conditional branch to body and 
- // another explicit branch from end of body to loop header
- //
+	//
+	// Create blocks for loop header , body and exit .
+	// make explicit branch to loop header , conditional branch to body and
+	// another explicit branch from end of body to loop header
+	//
 
- Value *thenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
- Value *elseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
+	Value *thenV = ConstantFP::get(getGlobalContext(), APFloat(1.0));
+	Value *elseV = ConstantFP::get(getGlobalContext(), APFloat(2.0));
 
- Function *TheFunction = builder.GetInsertBlock()->getParent(); 
+	Function *TheFunction = builder.GetInsertBlock()->getParent();
 
- BasicBlock *loopBB = BasicBlock::Create(getGlobalContext(), "loop", TheFunction);
- BasicBlock *bodyBB = BasicBlock::Create(getGlobalContext(), "body", TheFunction);
- BasicBlock *exitBB = BasicBlock::Create(getGlobalContext(), "exit", TheFunction);
- builder.CreateBr(loopBB);
+	BasicBlock *loopBB = BasicBlock::Create(getGlobalContext(), "loop",
+			TheFunction);
+	BasicBlock *bodyBB = BasicBlock::Create(getGlobalContext(), "body",
+			TheFunction);
+	BasicBlock *exitBB = BasicBlock::Create(getGlobalContext(), "exit",
+			TheFunction);
+	builder.CreateBr(loopBB);
 
-// emit loop header
+	// emit loop header
 
- builder.SetInsertPoint(loopBB);
+	builder.SetInsertPoint(loopBB);
 
- Value *condV = condition->codegen(ctx);
- condV = builder.CreateICmpEQ(condV,
-                              ConstantInt::get(getGlobalContext(), APInt(1,1)),
-                                "condition");
+	Value *condV = condition->codegen(ctx);
+	condV = builder.CreateICmpEQ(condV, ConstantInt::get(getGlobalContext(),
+			APInt(1, 1)), "condition");
 
- builder.CreateCondBr(condV, bodyBB, exitBB);
+	builder.CreateCondBr(condV, bodyBB, exitBB);
 
- builder.SetInsertPoint(bodyBB);
- 
-// emit code for loop body
+	builder.SetInsertPoint(bodyBB);
 
- for(int i=0;i<statements.size();++i) {
-    
-    Statement *st = statements.at(i);
-    st->codegen(ctx);
-  }
- 
-  builder.CreateBr(loopBB); // back to loop header.
+	// emit code for loop body
 
-// emit exit block
+	for (int i = 0; i < statements.size(); ++i) {
 
-  builder.SetInsertPoint(exitBB);
+		Statement *st = statements.at(i);
+		st->codegen(ctx);
+	}
 
-  PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()),1,
-                                  "iftmp");
-  PN->addIncoming(thenV, loopBB);
-  return PN;
+	builder.CreateBr(loopBB); // back to loop header.
+
+	// emit exit block
+
+	builder.SetInsertPoint(exitBB);
+
+	PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 1,
+			"iftmp");
+	PN->addIncoming(thenV, loopBB);
+	return PN;
 }
 
-ReturnStatement::ReturnStatement(Expression *_exp)
-{
-  exp = _exp;
+ReturnStatement::ReturnStatement(Expression *_exp) {
+	exp = _exp;
 }
 
-SymbolInfo *ReturnStatement::execute(Runtime_Context *ctx)
-{
-  info = exp->evaluate(ctx);
-  return info;
+SymbolInfo *ReturnStatement::execute(Runtime_Context *ctx) {
+	info = exp->evaluate(ctx);
+	return info;
 }
 
-Value* ReturnStatement::codegen(Execution_Context *ctx)
-{
-  return NULL;
+Value* ReturnStatement::codegen(Execution_Context *ctx) {
+	return NULL;
 }
 
-CallStatement::CallStatement(Expression *_exp)
-{
-  exp = _exp;
+CallStatement::CallStatement(Expression *_exp) {
+	exp = _exp;
 }
 
-SymbolInfo *CallStatement::execute(Runtime_Context *ctx)
-{
-  return exp->evaluate(ctx);
+SymbolInfo *CallStatement::execute(Runtime_Context *ctx) {
+	return exp->evaluate(ctx);
 }
 
-Value* CallStatement::codegen(Execution_Context *ctx)
-{
+Value* CallStatement::codegen(Execution_Context *ctx) {
 
 }
 
