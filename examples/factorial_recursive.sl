@@ -9,6 +9,7 @@ return 1;
 ELSE
 return d*FACT(d-1);
 ENDIF
+return 1;
 END
 ////////////////////
 //
@@ -23,5 +24,6 @@ While ( d <= 10 )
 PRINTLINE FACT(d);
 d = d+1;
 Wend
+return true;
 END
 

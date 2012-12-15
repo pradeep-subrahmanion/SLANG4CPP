@@ -29,5 +29,6 @@ ELSE
 PRINT "Two roots are available";
 ENDIF
 ENDIF
+return true;
 END
 

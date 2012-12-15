@@ -745,6 +745,13 @@ TypeInfo CallExpression::get_type() {
 	return type;
 }
 Value *CallExpression::codegen(Execution_Context *ctx) {
-	return NULL;
+ 
+ std::vector<Value*> args;
+ for (unsigned i = 0;i < actuals.size(); ++i) {
+    args.push_back(actuals[i]->codegen(ctx));
+  }
+
+  Function *func = ctx->get_procedure(proc->name);
+  return builder.CreateCall(func, args, "callfunc");
 }
 

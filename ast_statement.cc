@@ -305,7 +305,9 @@ SymbolInfo *ReturnStatement::execute(Runtime_Context *ctx) {
 }
 
 Value* ReturnStatement::codegen(Execution_Context *ctx) {
-	return NULL;
+   Value *val = exp->codegen(ctx);
+   ctx->update_return_value(val);
+	return val;
 }
 
 CallStatement::CallStatement(Expression *_exp) {
@@ -317,6 +319,6 @@ SymbolInfo *CallStatement::execute(Runtime_Context *ctx) {
 }
 
 Value* CallStatement::codegen(Execution_Context *ctx) {
-
+   return exp->codegen(ctx);
 }
 

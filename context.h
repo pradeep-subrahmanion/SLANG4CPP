@@ -39,7 +39,8 @@ public:
 
 class Execution_Context {
 	AllocaInstTable *st;
-
+   map<string,Function *> function_table;
+   Procedure *current_proc;
 public:
 	Execution_Context();
 	AllocaInstTable *get_symboltable();
@@ -47,6 +48,11 @@ public:
 	void add_symbol(string key, AllocaInst *info);
 	void assign_symbol(Variable *var, AllocaInst *value);
 	AllocaInst *get_symbol(string name);
+   void add_procedure(string name, Function *func);
+   Function *get_procedure(string name);
+   void set_current_procedure(Procedure *_proc);
+   Procedure *current_procedure();
+   void update_return_value(Value * val);
 };
 
 #endif

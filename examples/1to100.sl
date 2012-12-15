@@ -10,5 +10,6 @@ While ( d <= 100 )
 PRINTLINE d;
 d = d+1;
 Wend
+return true;
 END
 

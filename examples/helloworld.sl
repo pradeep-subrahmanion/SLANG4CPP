@@ -2,7 +2,8 @@
 // Helloworld.sl
 // Hello World Program
 //
-FUNCTION BOOLEAN MAIN()
+FUNCTION BOOLEAN main()
 PRINT "Hello World";
+return true;
 END
 

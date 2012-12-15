@@ -11,15 +11,21 @@ class CompilationUnit {
 public:
 	virtual SymbolInfo * execute(Runtime_Context *ctx,
 			vector<SymbolInfo *> _actuals) = 0;
+   virtual Value * codegen(Execution_Context *ctx) = 0;
 };
 
 class Proc {
 public:
 	virtual SymbolInfo * execute(Runtime_Context *ctx,
 			vector<SymbolInfo *> _actuals) = 0;
+   virtual Function * codegen(Execution_Context *ctx) = 0;
 };
 
 class Procedure: Proc {
+
+   // stack allocation for return value .
+   AllocaInst *ret_alloca;
+
 public:
 
 	string name;
@@ -29,11 +35,13 @@ public:
 	SymbolInfo *return_val;
 	TypeInfo type;
 
-			Procedure(string _name, vector<SymbolInfo *> _formals, vector<
+	Procedure(string _name, vector<SymbolInfo *> _formals, vector<
 					Statement *> stats, SymbolInfoTable *_locals,
 					TypeInfo _type);
 	SymbolInfo * execute(Runtime_Context *ctx, vector<SymbolInfo *> formals);
 	TypeInfo typecheck(Compilation_Context *ctx);
+   Function * codegen(Execution_Context *ctx);
+   void update_return_value(Value * val);
 };
 
 class Tmodule: CompilationUnit {
@@ -44,6 +52,7 @@ public:
 	Procedure * find_procedure(string name);
 	SymbolInfo * execute(Runtime_Context *ctx, vector<SymbolInfo *> _actuals);
 	TypeInfo typecheck(Compilation_Context *ctx);
+   Value * codegen(Execution_Context *ctx);
 };
 
 #endif

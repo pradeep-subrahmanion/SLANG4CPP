@@ -6,7 +6,7 @@
 using namespace std;
 using namespace CodeGen;
 
-#define KInterpreterMode 1
+#define KInterpreterMode 0
 
 int main(int argc, char **argv) {
 
@@ -64,23 +64,10 @@ int main(int argc, char **argv) {
 
 #else
 
-		Procedure *proc = mod->find_procedure("MAIN");
-		vector<Statement *> v = proc->statements;
+
 		//generate top level code
 		Execution_Context *rc = new Execution_Context();
-		emit_top_level_code();
-
-		// generate code for all statements
-
-
-		for(int i=0;i<v.size();++i) {
-			Statement *st = v.at(i);
-			st->codegen(rc);
-		}
-
-		// generate return statement
-
-		emit_ret_stmt();
+      mod->codegen(rc);
 
 		// write llvm IR to file (name_only.ll)
 

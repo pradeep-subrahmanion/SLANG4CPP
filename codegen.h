@@ -15,7 +15,10 @@ extern LLVMContext & context;
 extern Module *module;
 extern IRBuilder<> builder;
 
+Type *llvm_type_from_symboltype(TypeInfo type);
+
 void emit_top_level_code();
+Function * emit_function_block(const char *name, ArrayRef<Type*> argsRef, Type *type);
 void emit_ret_stmt();
 
 Value *emit_global_string(const char *buffer);

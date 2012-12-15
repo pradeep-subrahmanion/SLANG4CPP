@@ -26,6 +26,21 @@ void emit_top_level_code() {
 
 }
 
+//
+// Create main function , basic block for main . 
+//
+Function * emit_function_block(const char *name, ArrayRef<Type*> argsRef, Type *type) {
+
+	llvm::FunctionType *funcType = llvm::FunctionType::get(type,argsRef,
+			false);
+	Function *func = llvm::Function::Create(funcType,
+			llvm::Function::ExternalLinkage,name, module);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(context,"func",
+			func);
+	builder.SetInsertPoint(entry);
+   return func;
+}
+
 void emit_ret_stmt() {
 	builder.CreateRetVoid();
 }
@@ -215,6 +230,21 @@ Value * emit_strcmp_stmt(Value *val1, Value *val2) {
 	llvm::ArrayRef<llvm::Value*> argsRef1(putsArgs1);
 	Value* v = builder.CreateCall(putsFunc, argsRef1);
 	return v;
+}
+Type *llvm_type_from_symboltype(TypeInfo type) {
+
+   if(type == TYPE_NUMERIC) {
+      return builder.getDoubleTy();
+   }
+   else if(type == TYPE_STRING) {
+      return builder.getInt8Ty();
+   }
+   else if(type == TYPE_BOOL) {
+      return builder.getInt1Ty();
+   }
+
+   return NULL;
+
 }
 
 }
