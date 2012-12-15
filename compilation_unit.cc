@@ -5,174 +5,174 @@
 using namespace CodeGen;
 
 Procedure::Procedure(string _name, vector<SymbolInfo *> _formals, vector<
-		Statement *> stats, SymbolInfoTable *_locals, TypeInfo _type) {
+                     Statement *> stats, SymbolInfoTable *_locals, TypeInfo _type) {
 
-	name = _name;
-	formals = _formals;
-	statements = stats;
-	locals = _locals;
-	type = _type;
+    name = _name;
+    formals = _formals;
+    statements = stats;
+    locals = _locals;
+    type = _type;
 
-   /// initialize symbolinfo for return value . 
-   return_val  = new SymbolInfo();
-   return_val->symbol_name = "";
-   return_val->type = type;
+    /// initialize symbolinfo for return value .
+    return_val  = new SymbolInfo();
+    return_val->symbol_name = "";
+    return_val->type = type;
 }
 
 SymbolInfo * Procedure::execute(Runtime_Context *ctx,
-		vector<SymbolInfo *> actuals) {
+                                vector<SymbolInfo *> actuals) {
 
-	// add all arguments to symbol table
+    // add all arguments to symbol table
 
-	if (actuals.size() == formals.size()) {
-		for (int j = 0; j < formals.size(); ++j) {
-			SymbolInfo * info_actual = actuals.at(j);
-			SymbolInfo * info_formal = formals.at(j);
+    if (actuals.size() == formals.size()) {
+        for (int j = 0; j < formals.size(); ++j) {
+            SymbolInfo * info_actual = actuals.at(j);
+            SymbolInfo * info_formal = formals.at(j);
 
-			info_actual->symbol_name = info_formal->symbol_name;
-			ctx->add_symbol(info_actual);
-		}
-	}
+            info_actual->symbol_name = info_formal->symbol_name;
+            ctx->add_symbol(info_actual);
+        }
+    }
 
-	// execute statements
+    // execute statements
 
-	for (int j = 0; j < statements.size(); ++j) {
-		Statement *st = statements.at(j);
-		return_val = st->execute(ctx);
+    for (int j = 0; j < statements.size(); ++j) {
+        Statement *st = statements.at(j);
+        return_val = st->execute(ctx);
 
-		if (return_val != NULL) {
-			return return_val;
-		}
-	}
+        if (return_val != NULL) {
+            return return_val;
+        }
+    }
 
-	return NULL;
+    return NULL;
 }
 
 TypeInfo Procedure::typecheck(Compilation_Context *ctx) {
-	return TYPE_NUMERIC;
+    return TYPE_NUMERIC;
 }
 
 
 void Procedure::update_return_value(Value *val) {
-   builder.CreateStore(val, ret_alloca);
+    builder.CreateStore(val, ret_alloca);
 }
 
 Function * Procedure::codegen(Execution_Context *ctx) {
-   vector<Type *> args;
+    vector<Type *> args;
 
 
-   for(int i=0;i<formals.size();++i) {
-      SymbolInfo *info = formals.at(i);
-      Type *type = llvm_type_from_symboltype(info->type);
+    for(int i=0;i<formals.size();++i) {
+        SymbolInfo *info = formals.at(i);
+        Type *type = llvm_type_from_symboltype(info->type);
 
-      if(type != NULL) {
-         args.push_back(type);
-      }
-      else {
-         exit_with_message("Invalid type in function");
-      }
-   }
+        if(type != NULL) {
+            args.push_back(type);
+        }
+        else {
+            exit_with_message("Invalid type in function");
+        }
+    }
 
-   vector<Type *> llargs(args);
+    vector<Type *> llargs(args);
 
-   Type *ret_type = llvm_type_from_symboltype(type);
-   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    Type *ret_type = llvm_type_from_symboltype(type);
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-   // emit function header
-   Function *func = emit_function_block(name.c_str(), llargs, ret_type);
+    // emit function header
+    Function *func = emit_function_block(name.c_str(), llargs, ret_type);
 
-   // Set names for all arguments.
-   unsigned i = 0;
-   for (Function::arg_iterator ai = func->arg_begin(); i != args.size();
-       ++ai, ++i) {
-       SymbolInfo *inf = formals.at(i);
-       ai->setName(inf->symbol_name);
-   }
+    // Set names for all arguments.
+    unsigned i = 0;
+    for (Function::arg_iterator ai = func->arg_begin(); i != args.size();
+         ++ai, ++i) {
+        SymbolInfo *inf = formals.at(i);
+        ai->setName(inf->symbol_name);
+    }
 
-   exitBB = BasicBlock::Create(getGlobalContext(), "exit",
-			func);
-   //
-   // ReturnStatement will update return value via execution context .  
-   // Allocate space for return value
+    exitBB = BasicBlock::Create(getGlobalContext(), "exit",
+                                func);
+    //
+    // ReturnStatement will update return value via execution context .
+    // Allocate space for return value
 
-   ret_alloca = emit_stack_variable(return_val);
+    ret_alloca = emit_stack_variable(return_val);
 
-   // allocate space for parameters
-   i = 0;
-   for (Function::arg_iterator ai = func->arg_begin(); i != args.size();++ai,++i) {
-      SymbolInfo *info = formals.at(i);
-      AllocaInst *alcInst = emit_stack_variable(info);
-      builder.CreateStore(ai,alcInst);
-	   ctx->add_symbol(info->symbol_name, alcInst);
-   }
+    // allocate space for parameters
+    i = 0;
+    for (Function::arg_iterator ai = func->arg_begin(); i != args.size();++ai,++i) {
+        SymbolInfo *info = formals.at(i);
+        AllocaInst *alcInst = emit_stack_variable(info);
+        builder.CreateStore(ai,alcInst);
+        ctx->add_symbol(info->symbol_name, alcInst);
+    }
 
-   /// insert function into function table
-   ctx->add_procedure(name, func); 
+    /// insert function into function table
+    ctx->add_procedure(name, func);
 
-   // generate code for all statements
-   bool skip_branch;
-   for(int i=0;i<statements.size();++i) {
-      Statement *st = statements.at(i);
-      st->codegen(ctx);
-   }
+    // generate code for all statements
+    bool skip_branch;
+    for(int i=0;i<statements.size();++i) {
+        Statement *st = statements.at(i);
+        st->codegen(ctx);
+    }
 
-   builder.CreateBr(exitBB);  
+    builder.CreateBr(exitBB);
 
-   // emit return block
-  
-	builder.SetInsertPoint(exitBB);
-   builder.CreateRet(builder.CreateLoad(ret_alloca));
+    // emit return block
 
-   return func;
+    builder.SetInsertPoint(exitBB);
+    builder.CreateRet(builder.CreateLoad(ret_alloca));
+
+    return func;
 }
 
 BasicBlock * Procedure::exitblock()
 {
-   return exitBB;
+    return exitBB;
 }
 
 Tmodule::Tmodule(vector<Procedure *> _procs) {
-	procs = _procs;
+    procs = _procs;
 }
 
 Procedure * Tmodule::find_procedure(string name) {
-	for (int i = 0; i < procs.size(); ++i) {
-		Procedure *proc = procs.at(i);
-		string name1 = proc->name;
+    for (int i = 0; i < procs.size(); ++i) {
+        Procedure *proc = procs.at(i);
+        string name1 = proc->name;
 
-		std::transform(name1.begin(), name1.end(), name1.begin(), ::tolower);
-		std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+        std::transform(name1.begin(), name1.end(), name1.begin(), ::tolower);
+        std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-		if (name.compare(name1) == 0) {
-			return proc;
-		}
-	}
+        if (name.compare(name1) == 0) {
+            return proc;
+        }
+    }
 
-	return NULL;
+    return NULL;
 }
 
 SymbolInfo * Tmodule::execute(Runtime_Context *ctx,
-		vector<SymbolInfo *> _actuals) {
-	Procedure *_main = find_procedure("main");
-	if (_main != NULL) {
-		return _main->execute(ctx, _actuals);
-	}
+                              vector<SymbolInfo *> _actuals) {
+    Procedure *_main = find_procedure("main");
+    if (_main != NULL) {
+        return _main->execute(ctx, _actuals);
+    }
 
-	return NULL;
+    return NULL;
 }
 
 Value * Tmodule::codegen(Execution_Context *ctx) {
 
-   for (int i = 0; i < procs.size(); ++i) {
+    for (int i = 0; i < procs.size(); ++i) {
 
-		Procedure *proc = procs.at(i); 
+        Procedure *proc = procs.at(i);
 
-      // set current procedure in ctx , this will also clear symbol table
-      ctx->set_current_procedure(proc);
-    
-      // function codegen 
-      Function *func = proc->codegen(ctx);   
+        // set current procedure in ctx , this will also clear symbol table
+        ctx->set_current_procedure(proc);
 
-   }
-  
+        // function codegen
+        Function *func = proc->codegen(ctx);
+
+    }
+
 }

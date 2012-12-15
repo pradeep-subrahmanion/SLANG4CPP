@@ -10,92 +10,92 @@ using namespace CodeGen;
 
 int main(int argc, char **argv) {
 
-	if (argc < 2) {
-		cout << "Please enter input file\nUsage : slangcc <filename>\n";
-		return 0;
-	}
+    if (argc < 2) {
+        cout << "Please enter input file\nUsage : slangcc <filename>\n";
+        return 0;
+    }
 
-	std::string cmd;
-	char *name = argv[1];
-	FILE *fd = fopen(name, "r");
+    std::string cmd;
+    char *name = argv[1];
+    FILE *fd = fopen(name, "r");
 
-	// name without .ext
+    // name without .ext
 
-	int lastindex = std::string(name).find_last_of(".");
-	string name_only = std::string(name).substr(0, lastindex);
+    int lastindex = std::string(name).find_last_of(".");
+    string name_only = std::string(name).substr(0, lastindex);
 
-	if (fd != NULL) {
+    if (fd != NULL) {
 
-		// find file size
+        // find file size
 
-		fseek(fd, 0, SEEK_END);
-		int len = ftell(fd);
-		rewind(fd);
+        fseek(fd, 0, SEEK_END);
+        int len = ftell(fd);
+        rewind(fd);
 
-		// allocate memory for program text
+        // allocate memory for program text
 
-		char *buffer = (char *) malloc(len);
+        char *buffer = (char *) malloc(len);
 
-		if (buffer == NULL) {
-			fputs("Memory error", stderr);
-			return 0;
-		}
+        if (buffer == NULL) {
+            fputs("Memory error", stderr);
+            return 0;
+        }
 
-		int size = fread(buffer, 1, len, fd);
+        int size = fread(buffer, 1, len, fd);
 
-		// read program text
+        // read program text
 
-		string program_str(buffer);
-		// Compilation_Context *cc= new Compilation_Context();
-		// parse , get all statements
+        string program_str(buffer);
+        // Compilation_Context *cc= new Compilation_Context();
+        // parse , get all statements
 
-		Parser *p = new Parser(program_str);
-		Tmodule *mod = p->do_parse();
+        Parser *p = new Parser(program_str);
+        Tmodule *mod = p->do_parse();
 
-		if (mod == NULL) {
-			exit_with_message("Error while parsing functions");
-		}
+        if (mod == NULL) {
+            exit_with_message("Error while parsing functions");
+        }
 
 #if KInterpreterMode   
 
-		vector<SymbolInfo *> d;
-		Runtime_Context *rc = new Runtime_Context(mod);
-		mod->execute(rc, d);
+        vector<SymbolInfo *> d;
+        Runtime_Context *rc = new Runtime_Context(mod);
+        mod->execute(rc, d);
 
 #else
 
 
-		//generate top level code
-		Execution_Context *rc = new Execution_Context();
-      mod->codegen(rc);
+        //generate top level code
+        Execution_Context *rc = new Execution_Context();
+        mod->codegen(rc);
 
-		// write llvm IR to file (name_only.ll)
+        // write llvm IR to file (name_only.ll)
 
-		string old_name = name_only;
-		string new_name = std::string(name_only) +".ll";
-		FILE *fd = fopen(new_name.c_str(),"w");
+        string old_name = name_only;
+        string new_name = std::string(name_only) +".ll";
+        FILE *fd = fopen(new_name.c_str(),"w");
 
-		raw_fd_ostream file(fileno(fd), 1,0);
-		module->print(file, NULL);
-		file.close();
+        raw_fd_ostream file(fileno(fd), 1,0);
+        module->print(file, NULL);
+        file.close();
 
-		// compile to native assembly using 'llc' (name_only.s)
-		old_name = new_name;
-		new_name = std::string(name_only) +".s";
+        // compile to native assembly using 'llc' (name_only.s)
+        old_name = new_name;
+        new_name = std::string(name_only) +".s";
 
-		cmd = std::string("llc ") + old_name + std::string(" -o ") + new_name;
-		system(cmd.c_str());
+        cmd = std::string("llc ") + old_name + std::string(" -o ") + new_name;
+        system(cmd.c_str());
 
-		// generate native exe using gcc (name_only)
-		old_name = new_name;
-		new_name = name_only;
+        // generate native exe using gcc (name_only)
+        old_name = new_name;
+        new_name = name_only;
 
-		cmd = std::string("gcc ") +old_name + std::string(" -o ") + new_name;
-		system(cmd.c_str());
+        cmd = std::string("gcc ") +old_name + std::string(" -o ") + new_name;
+        system(cmd.c_str());
 #endif    
-		delete p;
-		free(buffer);
+        delete p;
+        free(buffer);
 
-	}
-	return 0;
+    }
+    return 0;
 }
