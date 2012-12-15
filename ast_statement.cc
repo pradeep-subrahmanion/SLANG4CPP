@@ -9,6 +9,7 @@ using namespace CodeGen;
 
 PrintStatement::PrintStatement(Expression *_exp) {
 	exp = _exp;
+   stmt_type = StatementTypePrint;
 }
 
 SymbolInfo *PrintStatement::execute(Runtime_Context *ctx) {
@@ -41,6 +42,7 @@ Value* PrintStatement::codegen(Execution_Context *ctx) {
 
 PrintLineStatement::PrintLineStatement(Expression *_exp) {
 	exp = _exp;
+   stmt_type = StatementTypePrintLine;
 }
 
 SymbolInfo * PrintLineStatement::execute(Runtime_Context *ctx) {
@@ -71,6 +73,7 @@ Value* PrintLineStatement::codegen(Execution_Context *ctx) {
 
 VariableDeclStatement::VariableDeclStatement(SymbolInfo *_info) {
 	info = _info;
+   stmt_type = StatementTypeDeclaration;
 }
 SymbolInfo *VariableDeclStatement::execute(Runtime_Context *ctx) {
 	ctx->add_symbol(info);
@@ -91,10 +94,12 @@ Value* VariableDeclStatement::codegen(Execution_Context *ctx) {
 AssignmentStatement::AssignmentStatement(Variable *_var, Expression *_exp) {
 	var = _var;
 	exp = _exp;
+   stmt_type = StatementTypeAssignment;
 }
 AssignmentStatement::AssignmentStatement(SymbolInfo *info, Expression *_exp) {
 	var = new Variable(info);
 	exp = _exp;
+   stmt_type = StatementTypeAssignment;
 }
 
 SymbolInfo *AssignmentStatement::execute(Runtime_Context *ctx) {
@@ -117,6 +122,7 @@ IfStatement::IfStatement(Expression *_exp, vector<Statement *> v1, vector<
 	condition = _exp;
 	if_statements = v1;
 	else_statements = v2;
+   stmt_type = StatementTypeIf;
 }
 
 SymbolInfo *IfStatement::execute(Runtime_Context *ctx) {
@@ -184,7 +190,7 @@ Value* IfStatement::codegen(Execution_Context *ctx) {
       /// if current statement is 'return' , then no need to generate 
       /// remaining code in the block
  
-      if(st->isreturn == true) {
+      if(st->stmt_type == StatementTypeReturn) {
          Procedure *p = ctx->current_procedure();
          BasicBlock *bb = ctx->get_proc_exitblock(p);
 	      builder.CreateBr(bb);
@@ -208,18 +214,16 @@ Value* IfStatement::codegen(Execution_Context *ctx) {
 
 		Statement *st = else_statements.at(i);
       st->codegen(ctx);
-
       /// if current statement is 'return' , then no need to generate 
       /// remaining code in the block
  
-      if(st->isreturn == true) {
+      if(st->stmt_type == StatementTypeReturn) {
          Procedure *p = ctx->current_procedure();
          BasicBlock *bb = ctx->get_proc_exitblock(p);
 	      builder.CreateBr(bb);
          skip_branch = true;
          break;
       }
-
 	}
    if(!skip_branch) {
 	   builder.CreateBr(mergeBB);
@@ -241,6 +245,7 @@ Value* IfStatement::codegen(Execution_Context *ctx) {
 WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v) {
 	condition = _exp;
 	statements = v;
+   stmt_type = StatementTypeWhile;
 }
 SymbolInfo *WhileStatement::execute(Runtime_Context *ctx) {
 	SymbolInfo *ret = NULL;
@@ -296,7 +301,7 @@ Value* WhileStatement::codegen(Execution_Context *ctx) {
 	builder.SetInsertPoint(bodyBB);
 
 	// emit code for loop body
-   bool hasreturn;
+   bool hasreturn = false;
 	for (int i = 0; i < statements.size(); ++i) {
 
 		Statement *st = statements.at(i);
@@ -305,7 +310,7 @@ Value* WhileStatement::codegen(Execution_Context *ctx) {
       /// if current statement is 'return' , then no need to generate 
       /// remaining code in the block
  
-      if(st->isreturn == true) {
+      if(st->stmt_type == StatementTypeReturn) {
          hasreturn = true;
          break;
       }
@@ -327,7 +332,7 @@ Value* WhileStatement::codegen(Execution_Context *ctx) {
 }
 
 ReturnStatement::ReturnStatement(Expression *_exp) {
-   isreturn = true;
+   stmt_type = StatementTypeReturn;
 	exp = _exp;
 }
 
@@ -344,6 +349,7 @@ Value* ReturnStatement::codegen(Execution_Context *ctx) {
 
 CallStatement::CallStatement(Expression *_exp) {
 	exp = _exp;
+   stmt_type = StatementTypeCall;
 }
 
 SymbolInfo *CallStatement::execute(Runtime_Context *ctx) {

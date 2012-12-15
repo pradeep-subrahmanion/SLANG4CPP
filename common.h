@@ -114,6 +114,17 @@ typedef enum {
 	ExpressionTypeBinaryPlus
 } ExpressionType;
 
+typedef enum {
+	StatementTypePrint,
+	StatementTypePrintLine,
+	StatementTypeAssignment,
+	StatementTypeDeclaration,
+   StatementTypeIf,
+   StatementTypeWhile,
+   StatementTypeReturn,
+   StatementTypeCall
+} StatementType;
+
 // Represents symbol.
 
 class SymbolInfo {

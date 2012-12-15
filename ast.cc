@@ -702,6 +702,9 @@ Value *LogicalNot::codegen(Execution_Context *ctx) {
 CallExpression::CallExpression(Procedure *_proc, vector<Expression *> _actuals) {
 	proc = _proc;
 	actuals = _actuals;
+   procname = proc->name;
+   type = proc->type;
+   isrecurse = false;
 }
 CallExpression::CallExpression(string _name, vector<Expression *> _actuals,
 		bool _isrecurse, TypeInfo _type) {
@@ -744,14 +747,17 @@ TypeInfo CallExpression::typecheck(Compilation_Context *ctx) {
 TypeInfo CallExpression::get_type() {
 	return type;
 }
+
 Value *CallExpression::codegen(Execution_Context *ctx) {
  
+
  std::vector<Value*> args;
  for (unsigned i = 0;i < actuals.size(); ++i) {
     args.push_back(actuals[i]->codegen(ctx));
   }
 
-  Function *func = ctx->get_procedure(proc->name);
+  Function *func = ctx->get_procedure(procname);
   return builder.CreateCall(func, args, "callfunc");
+
 }
 
