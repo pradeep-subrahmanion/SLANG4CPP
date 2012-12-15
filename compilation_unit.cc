@@ -79,7 +79,6 @@ Function * Procedure::codegen(Execution_Context *ctx) {
    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
    // emit function header
-
    Function *func = emit_function_block(name.c_str(), llargs, ret_type);
 
    // Set names for all arguments.
@@ -107,6 +106,9 @@ Function * Procedure::codegen(Execution_Context *ctx) {
 	   ctx->add_symbol(info->symbol_name, alcInst);
    }
 
+   /// insert function into function table
+   ctx->add_procedure(name, func); 
+
    // generate code for all statements
    bool skip_branch;
    for(int i=0;i<statements.size();++i) {
@@ -114,9 +116,7 @@ Function * Procedure::codegen(Execution_Context *ctx) {
       st->codegen(ctx);
    }
 
-
-   builder.CreateBr(exitBB);
-   
+   builder.CreateBr(exitBB);  
 
    // emit return block
   
@@ -165,17 +165,14 @@ Value * Tmodule::codegen(Execution_Context *ctx) {
 
    for (int i = 0; i < procs.size(); ++i) {
 
-		Procedure *proc = procs.at(i);
+		Procedure *proc = procs.at(i); 
 
       // set current procedure in ctx , this will also clear symbol table
       ctx->set_current_procedure(proc);
     
       // function codegen 
-      Function *func = proc->codegen(ctx);
+      Function *func = proc->codegen(ctx);   
 
-      /// insert function into function table;
-      ctx->add_procedure(proc->name, func);     
-          
    }
-
+  
 }

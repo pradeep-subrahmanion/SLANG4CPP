@@ -82,20 +82,25 @@ AllocaInst *Execution_Context::get_symbol(string name) {
 }
 void Execution_Context::add_procedure(string name, Function *func)
 {
+   string name1 = name;
+   std::transform(name1.begin(), name1.end(), name1.begin(), ::tolower);
    function_table.insert(std::make_pair(name, func));
 }
 
 Function *Execution_Context::get_procedure(string name)
 {
-   map<string, Function *>::iterator it =  function_table.find(name);
+   string name1 = name;
+   std::transform(name1.begin(), name1.end(), name1.begin(), ::tolower);
+   map<string, Function *>::iterator it =  function_table.find(name1);
    return it->second;
 }
 
 void Execution_Context::set_current_procedure(Procedure *_proc)
 {
    //clear  symbol table
-
    st->clear();
+
+   //set new proc
    current_proc = _proc;
 }
 

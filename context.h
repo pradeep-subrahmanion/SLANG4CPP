@@ -41,6 +41,7 @@ class Execution_Context {
 	AllocaInstTable *st;
    map<string,Function *> function_table;
    Procedure *current_proc;
+
 public:
 	Execution_Context();
 	AllocaInstTable *get_symboltable();
