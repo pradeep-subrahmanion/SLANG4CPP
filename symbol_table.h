@@ -16,6 +16,7 @@ public:
 	T get(string name);
 	void assign(Variable *var, T value);
 	void assign(string var, T value);
+   void clear();
 };
 
 template<class T>
@@ -47,6 +48,11 @@ void SymbolTable<T>::assign(string var, T value) {
 	typename map<string, T>::iterator it;
 	it = table.find(var);
 	it->second = value;
+}
+
+template<class T>
+void SymbolTable<T>::clear() {
+   table.clear();
 }
 
 #endif

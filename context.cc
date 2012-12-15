@@ -93,6 +93,9 @@ Function *Execution_Context::get_procedure(string name)
 
 void Execution_Context::set_current_procedure(Procedure *_proc)
 {
+   //clear  symbol table
+
+   st->clear();
    current_proc = _proc;
 }
 
@@ -104,5 +107,10 @@ Procedure *Execution_Context::current_procedure()
 void Execution_Context::update_return_value(Value * val)
 {
    current_proc->update_return_value(val);
+}
+
+BasicBlock * Execution_Context::get_proc_exitblock(Procedure *proc)
+{
+   return proc->exitblock();
 }
 

@@ -175,28 +175,55 @@ Value* IfStatement::codegen(Execution_Context *ctx) {
 
 	// emit code for all statements in if
 
+   bool skip_branch;
+
 	for (int i = 0; i < if_statements.size(); ++i) {
 
 		Statement *st = if_statements.at(i);
-		st->codegen(ctx);
+      st->codegen(ctx);
+      /// if current statement is 'return' , then no need to generate 
+      /// remaining code in the block
+ 
+      if(st->isreturn == true) {
+         Procedure *p = ctx->current_procedure();
+         BasicBlock *bb = ctx->get_proc_exitblock(p);
+	      builder.CreateBr(bb);
+         skip_branch = true;
+         break;
+      }
+
 	}
 
-	builder.CreateBr(mergeBB);
-
+   if(!skip_branch) {
+	   builder.CreateBr(mergeBB);
+   }
 	thenBB = builder.GetInsertBlock();
 
 	TheFunction->getBasicBlockList().push_back(elseBB);
 	builder.SetInsertPoint(elseBB);
-
+   skip_branch = false;
 	// emit code for all statements in else
 
 	for (int i = 0; i < else_statements.size(); ++i) {
 
 		Statement *st = else_statements.at(i);
-		st->codegen(ctx);
-	}
+      st->codegen(ctx);
 
-	builder.CreateBr(mergeBB);
+      /// if current statement is 'return' , then no need to generate 
+      /// remaining code in the block
+ 
+      if(st->isreturn == true) {
+         Procedure *p = ctx->current_procedure();
+         BasicBlock *bb = ctx->get_proc_exitblock(p);
+	      builder.CreateBr(bb);
+         skip_branch = true;
+         break;
+      }
+
+	}
+   if(!skip_branch) {
+	   builder.CreateBr(mergeBB);
+   }
 
 	elseBB = builder.GetInsertBlock();
 
@@ -205,14 +232,7 @@ Value* IfStatement::codegen(Execution_Context *ctx) {
 	TheFunction->getBasicBlockList().push_back(mergeBB);
 	builder.SetInsertPoint(mergeBB);
 
-	//insert PHI node
-
-	PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 2,
-			"iftmp");
-
-	PN->addIncoming(thenV, thenBB);
-	PN->addIncoming(elseV, elseBB);
-	return PN;
+	return NULL;
 
 }
 
@@ -276,26 +296,38 @@ Value* WhileStatement::codegen(Execution_Context *ctx) {
 	builder.SetInsertPoint(bodyBB);
 
 	// emit code for loop body
-
+   bool hasreturn;
 	for (int i = 0; i < statements.size(); ++i) {
 
 		Statement *st = statements.at(i);
 		st->codegen(ctx);
+
+      /// if current statement is 'return' , then no need to generate 
+      /// remaining code in the block
+ 
+      if(st->isreturn == true) {
+         hasreturn = true;
+         break;
+      }
 	}
 
 	builder.CreateBr(loopBB); // back to loop header.
-
-	// emit exit block
-
 	builder.SetInsertPoint(exitBB);
 
-	PHINode *PN = builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), 1,
-			"iftmp");
-	PN->addIncoming(thenV, loopBB);
-	return PN;
+   // emit exit block
+
+   if(hasreturn) {
+
+      Procedure *p = ctx->current_procedure();
+      BasicBlock *bb = ctx->get_proc_exitblock(p);
+	   builder.CreateBr(bb);
+
+   }
+
 }
 
 ReturnStatement::ReturnStatement(Expression *_exp) {
+   isreturn = true;
 	exp = _exp;
 }
 

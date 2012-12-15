@@ -53,6 +53,7 @@ public:
    void set_current_procedure(Procedure *_proc);
    Procedure *current_procedure();
    void update_return_value(Value * val);
+   BasicBlock * get_proc_exitblock(Procedure *proc);
 };
 
 #endif

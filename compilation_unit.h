@@ -25,7 +25,7 @@ class Procedure: Proc {
 
    // stack allocation for return value .
    AllocaInst *ret_alloca;
-
+   BasicBlock * exitBB;
 public:
 
 	string name;
@@ -42,6 +42,7 @@ public:
 	TypeInfo typecheck(Compilation_Context *ctx);
    Function * codegen(Execution_Context *ctx);
    void update_return_value(Value * val);
+   BasicBlock *exitblock();
 };
 
 class Tmodule: CompilationUnit {

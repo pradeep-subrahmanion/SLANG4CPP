@@ -60,6 +60,7 @@ void Procedure::update_return_value(Value *val) {
 Function * Procedure::codegen(Execution_Context *ctx) {
    vector<Type *> args;
 
+
    for(int i=0;i<formals.size();++i) {
       SymbolInfo *info = formals.at(i);
       Type *type = llvm_type_from_symboltype(info->type);
@@ -81,7 +82,16 @@ Function * Procedure::codegen(Execution_Context *ctx) {
 
    Function *func = emit_function_block(name.c_str(), llargs, ret_type);
 
-  
+   // Set names for all arguments.
+   unsigned i = 0;
+   for (Function::arg_iterator ai = func->arg_begin(); i != args.size();
+       ++ai, ++i) {
+       SymbolInfo *inf = formals.at(i);
+       ai->setName(inf->symbol_name);
+   }
+
+   exitBB = BasicBlock::Create(getGlobalContext(), "exit",
+			func);
    //
    // ReturnStatement will update return value via execution context .  
    // Allocate space for return value
@@ -89,25 +99,36 @@ Function * Procedure::codegen(Execution_Context *ctx) {
    ret_alloca = emit_stack_variable(return_val);
 
    // allocate space for parameters
-
-   for (int j = 0; j < formals.size(); ++j) {
-      SymbolInfo *info = formals.at(j);
+   i = 0;
+   for (Function::arg_iterator ai = func->arg_begin(); i != args.size();++ai,++i) {
+      SymbolInfo *info = formals.at(i);
       AllocaInst *alcInst = emit_stack_variable(info);
+      builder.CreateStore(ai,alcInst);
 	   ctx->add_symbol(info->symbol_name, alcInst);
    }
 
-   // generate code for all statements , this includes returen statement also.
-
+   // generate code for all statements
+   bool skip_branch;
    for(int i=0;i<statements.size();++i) {
       Statement *st = statements.at(i);
       st->codegen(ctx);
    }
 
-   // emit return value
 
+   builder.CreateBr(exitBB);
+   
+
+   // emit return block
+  
+	builder.SetInsertPoint(exitBB);
    builder.CreateRet(builder.CreateLoad(ret_alloca));
 
    return func;
+}
+
+BasicBlock * Procedure::exitblock()
+{
+   return exitBB;
 }
 
 Tmodule::Tmodule(vector<Procedure *> _procs) {
@@ -141,12 +162,17 @@ SymbolInfo * Tmodule::execute(Runtime_Context *ctx,
 }
 
 Value * Tmodule::codegen(Execution_Context *ctx) {
+
    for (int i = 0; i < procs.size(); ++i) {
 
 		Procedure *proc = procs.at(i);
+
+      // set current procedure in ctx , this will also clear symbol table
       ctx->set_current_procedure(proc);
     
+      // function codegen 
       Function *func = proc->codegen(ctx);
+
       /// insert function into function table;
       ctx->add_procedure(proc->name, func);     
           

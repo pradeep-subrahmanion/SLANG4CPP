@@ -3,6 +3,7 @@
 
 class Statement {
 public:
+   bool isreturn;
 	virtual SymbolInfo *execute(Runtime_Context *ctx) =0;
 	virtual Value* codegen(Execution_Context *ctx)=0;
 
