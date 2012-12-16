@@ -1,4 +1,12 @@
-A C++ implementation of SLANG compiler (http://slangfordotnet.codeplex.com). SLAG4CPP uses LLVM as backend for code generation . 
+SLANG (Simple LANGuage ) was initially developed as a tool to teach compiler construction. At first , SLANG compiler (SLANG4.NET) was written in C# and used .NET reflection for backend code generation. SLANG has improved over the past few years and is now being used at production environments for evaluating business rules with the help of JavaScript backend. 
+ 
+This project rewrites SLANG Compiler in C++ and uses LLVM for backend code generation. SLANG4CPP enables SLANG programs to run native code on Linux , MAC OS X and Windows.   
+ 
+SLANG4.NET  - http://slangfordotnet.codeplex.com/ 
+ 
+Java port of SLANG (SLANG4JAVA) can be found at , 
+
+https://github.com/aashiks/Slang4Java
 
 
 BUILD
