@@ -31,6 +31,7 @@ public:
     bool check_proto(string name);
     Procedure * get_procedure();
     void add_symbol(SymbolInfo *info);
+    ~ProcedureBuilder();
 };
 
 class TmoduleBuilder: Builder {
@@ -47,7 +48,7 @@ public:
     void add_procedure(Procedure *p);
     Procedure *get_procedure(string name);
     Tmodule *get_program();
-
+    ~TmoduleBuilder();
 };
 
 #endif

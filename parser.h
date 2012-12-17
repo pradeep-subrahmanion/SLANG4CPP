@@ -48,5 +48,7 @@ public:
     Parser(string str);
     vector<Statement*> parse(ProcedureBuilder *ctx);
     Tmodule *do_parse();
+    ~Parser();
+
 
 };

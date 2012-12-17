@@ -40,6 +40,7 @@ public:
     VariableDeclStatement(SymbolInfo *_info);
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    ~VariableDeclStatement();
 };
 
 class AssignmentStatement: public Statement {
@@ -51,6 +52,7 @@ public:
     AssignmentStatement(Variable *_var, Expression *_exp);
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    ~AssignmentStatement();
 };
 
 class IfStatement: public Statement {
@@ -63,6 +65,7 @@ public:
                 vector<Statement *> v2);
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    ~IfStatement();
 };
 
 class WhileStatement: public Statement {
@@ -74,6 +77,7 @@ public:
     WhileStatement(Expression *_exp, vector<Statement *> v);
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    ~WhileStatement();
 
 };
 
@@ -85,6 +89,7 @@ public:
     ReturnStatement(Expression *_exp);
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    ~ReturnStatement();
 };
 
 class CallStatement: public Statement {
@@ -94,4 +99,5 @@ public:
     CallStatement(Expression *_exp);
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    ~CallStatement();
 };

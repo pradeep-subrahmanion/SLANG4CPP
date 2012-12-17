@@ -8,12 +8,19 @@
 #include <vector>
 
 #include "llvm/DerivedTypes.h"
-#include "llvm/IRBuilder.h"
+#include "llvm/Support/IRBuilder.h"
 #include "llvm/LLVMContext.h"
 #include "llvm/Module.h"
 #include "llvm/Analysis/Verifier.h"
 #include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/ExecutionEngine/JIT.h"
+#include "llvm/ExecutionEngine/Interpreter.h"
+#include "llvm/ExecutionEngine/GenericValue.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/ManagedStatic.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/IRBuilder.h"
 
 using namespace std;
 

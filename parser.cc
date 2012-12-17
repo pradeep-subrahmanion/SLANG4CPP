@@ -590,4 +590,7 @@ Statement *Parser::parse_while_statement(ProcedureBuilder *ctx) {
     }
     return new WhileStatement(exp, stmts);
 }
+Parser::~Parser() {
+  
+}
 

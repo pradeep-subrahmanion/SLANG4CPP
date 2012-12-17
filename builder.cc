@@ -41,6 +41,10 @@ void ProcedureBuilder::add_symbol(SymbolInfo *info) {
     ctx->add_symbol(info);
 }
 
+ProcedureBuilder::~ProcedureBuilder() {
+  
+}
+
 TmoduleBuilder::TmoduleBuilder() {
 
 }
@@ -107,4 +111,8 @@ Procedure *TmoduleBuilder::get_procedure(string name) {
 
 Tmodule *TmoduleBuilder::get_program() {
     return new Tmodule(procs);
+}
+
+TmoduleBuilder::~TmoduleBuilder() {
+  
 }

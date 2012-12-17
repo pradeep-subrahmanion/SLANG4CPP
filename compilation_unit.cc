@@ -131,6 +131,10 @@ BasicBlock * Procedure::exitblock()
     return exitBB;
 }
 
+Procedure::~Procedure() {
+  
+}
+
 Tmodule::Tmodule(vector<Procedure *> _procs) {
     procs = _procs;
 }
@@ -175,4 +179,8 @@ Value * Tmodule::codegen(Execution_Context *ctx) {
 
     }
 
+}
+
+Tmodule::~Tmodule() {
+  
 }

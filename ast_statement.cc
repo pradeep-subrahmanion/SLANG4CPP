@@ -27,7 +27,7 @@ SymbolInfo *PrintStatement::execute(Runtime_Context *ctx) {
 }
 
 PrintStatement::~PrintStatement() {
-
+  delete exp;
 }
 
 Value* PrintStatement::codegen(Execution_Context *ctx) {
@@ -59,7 +59,7 @@ SymbolInfo * PrintLineStatement::execute(Runtime_Context *ctx) {
 }
 
 PrintLineStatement::~PrintLineStatement() {
-
+  delete exp;
 }
 
 Value* PrintLineStatement::codegen(Execution_Context *ctx) {
@@ -89,6 +89,11 @@ Value* VariableDeclStatement::codegen(Execution_Context *ctx) {
     return NULL;
 }
 
+VariableDeclStatement::~VariableDeclStatement() {
+  delete info;
+  delete var;
+}
+
 // Assignment Statement
 
 AssignmentStatement::AssignmentStatement(Variable *_var, Expression *_exp) {
@@ -113,6 +118,11 @@ Value* AssignmentStatement::codegen(Execution_Context *ctx) {
     AllocaInst *alcInst = ctx->get_symbol(var->get_name());
     emit_store_Instruction(alcInst, v);
     return NULL;
+}
+
+AssignmentStatement::~AssignmentStatement() {
+  delete exp;
+  delete var;
 }
 
 //If Statement
@@ -240,6 +250,10 @@ Value* IfStatement::codegen(Execution_Context *ctx) {
 
 }
 
+IfStatement::~IfStatement() {
+  delete condition;
+}
+
 // While Statement
 
 WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v) {
@@ -331,6 +345,11 @@ Value* WhileStatement::codegen(Execution_Context *ctx) {
 
 }
 
+WhileStatement::~WhileStatement() {
+  
+  delete condition;
+}
+
 ReturnStatement::ReturnStatement(Expression *_exp) {
     stmt_type = StatementTypeReturn;
     exp = _exp;
@@ -347,6 +366,11 @@ Value* ReturnStatement::codegen(Execution_Context *ctx) {
     return val;
 }
 
+ReturnStatement::~ReturnStatement() {
+  delete exp;
+  delete info;
+}
+
 CallStatement::CallStatement(Expression *_exp) {
     exp = _exp;
     stmt_type = StatementTypeCall;
@@ -358,5 +382,9 @@ SymbolInfo *CallStatement::execute(Runtime_Context *ctx) {
 
 Value* CallStatement::codegen(Execution_Context *ctx) {
     return exp->codegen(ctx);
+}
+
+CallStatement::~CallStatement() {
+  delete exp;
 }
 

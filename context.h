@@ -23,6 +23,7 @@ public:
     void add_symbol(SymbolInfo *info);
     void assign_symbol(Variable *var, SymbolInfo *value);
     SymbolInfo *get_symbol(string name);
+    ~Runtime_Context();
 };
 
 class Compilation_Context {
@@ -35,6 +36,7 @@ public:
     void add_symbol(SymbolInfo *info);
     void assign_symbol(Variable *var, SymbolInfo *value);
     SymbolInfo *get_symbol(string name);
+    ~Compilation_Context();
 };
 
 class Execution_Context {
@@ -55,6 +57,7 @@ public:
     Procedure *current_procedure();
     void update_return_value(Value * val);
     BasicBlock * get_proc_exitblock(Procedure *proc);
+    ~Execution_Context();
 };
 
 #endif

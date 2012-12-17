@@ -35,6 +35,9 @@ SymbolInfo * Runtime_Context::get_symbol(string name) {
 	return st->get(name);
 }
 
+Runtime_Context::~Runtime_Context() {
+  
+}
 // Compilation Context
 
 Compilation_Context::Compilation_Context() {
@@ -60,6 +63,9 @@ SymbolInfo * Compilation_Context::get_symbol(string name) {
 	return st->get(name);
 }
 
+
+Compilation_Context::~Compilation_Context() {
+}
 //Execution context
 
 Execution_Context::Execution_Context() {
@@ -118,4 +124,5 @@ BasicBlock * Execution_Context::get_proc_exitblock(Procedure *proc)
 {
    return proc->exitblock();
 }
-
+Execution_Context::~Execution_Context() {
+}

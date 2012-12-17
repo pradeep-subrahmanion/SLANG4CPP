@@ -28,6 +28,10 @@ Value *BooleanConstant::codegen(Execution_Context *ctx) {
     return ConstantInt::get(getGlobalContext(), APInt(1, i));
 }
 
+BooleanConstant::~BooleanConstant() {
+  delete info;
+}
+
 // Numeric Constant
 
 NumericConstant::NumericConstant(double _value) {
@@ -51,6 +55,11 @@ TypeInfo NumericConstant::get_type() {
 
 Value *NumericConstant::codegen(Execution_Context *ctx) {
     return ConstantFP::get(getGlobalContext(), APFloat(info->double_val));
+}
+
+NumericConstant::~NumericConstant()
+{
+  delete info;
 }
 
 // String Literal
@@ -81,6 +90,11 @@ string StringLiteral::evaluate_string(Execution_Context *ctx) {
 Value *StringLiteral::codegen(Execution_Context *ctx) {
     return emit_global_string(info->string_val.c_str());
 }
+
+StringLiteral::~StringLiteral() {
+  delete info;
+}
+
 //Variable
 
 Variable::Variable(SymbolInfo *_info) {
@@ -166,6 +180,10 @@ Value *Variable::codegen(Execution_Context *ctx) {
     return emit_load_Instruction(alcInst);
 
 }
+
+Variable::~Variable() {
+  delete info;
+}
 //Binary Plus
 
 BinaryPlus::BinaryPlus(Expression *e1, Expression *e2) {
@@ -239,6 +257,11 @@ Value *BinaryPlus::codegen(Execution_Context *ctx) {
     return result;
 }
 
+BinaryPlus::~BinaryPlus() {
+  delete exp1;
+  delete exp2;
+}
+
 //Binary Minus
 
 
@@ -281,6 +304,11 @@ Value *BinaryMinus::codegen(Execution_Context *ctx) {
     Value *val2 = exp2->codegen(ctx);
 
     return emit_sub_instruction(val1, val2);
+}
+
+BinaryMinus::~BinaryMinus() {
+  delete exp1;
+  delete exp2;
 }
 
 //Multiplication
@@ -327,6 +355,11 @@ Value *Mult::codegen(Execution_Context *ctx) {
     return emit_mul_instruction(val1, val2);
 }
 
+Mult::~Mult() {
+  delete exp1;
+  delete exp2;
+}
+
 //Division
 
 
@@ -370,6 +403,12 @@ Value *Div::codegen(Execution_Context *ctx) {
 
     return emit_div_instruction(val1, val2);
 }
+
+Div::~Div() {
+  delete exp1;
+  delete exp2;
+}
+
 
 //UnaryPlus
 
@@ -417,6 +456,11 @@ Value *UnaryPlus::codegen(Execution_Context *ctx) {
     return val;
 }
 
+
+UnaryPlus::~UnaryPlus() {
+  delete exp1;
+}
+
 //UnaryMinus
 
 UnaryMinus::UnaryMinus(Expression *e1) {
@@ -461,6 +505,10 @@ TypeInfo UnaryMinus::get_type() {
 Value *UnaryMinus::codegen(Execution_Context *ctx) {
     Value *v = exp1->codegen(ctx);
     return emit_unary_minus_instruction(v);
+}
+
+UnaryMinus::~UnaryMinus() {
+  delete exp1;
 }
 
 // Relational Operator
@@ -602,6 +650,10 @@ Value *RelationalExpression::codegen(Execution_Context *ctx) {
 
 }
 
+RelationalExpression::~RelationalExpression() {
+  delete exp1;
+  delete exp2;
+}
 // Logical Operator
 
 LogicalExpression::LogicalExpression(Expression *e1, Expression *e2, Token _op) {
@@ -661,6 +713,11 @@ Value *LogicalExpression::codegen(Execution_Context *ctx) {
     return NULL;
 }
 
+LogicalExpression::~LogicalExpression() {
+  delete exp1;
+  delete exp2;
+}
+
 // Logical NOT
 
 LogicalNot::LogicalNot(Expression *e1) {
@@ -697,6 +754,10 @@ TypeInfo LogicalNot::get_type() {
 Value *LogicalNot::codegen(Execution_Context *ctx) {
     Value *val = exp->codegen(ctx);
     return emit_not_instruction(val);
+}
+
+LogicalNot::~LogicalNot() {
+  delete exp;
 }
 
 CallExpression::CallExpression(Procedure *_proc, vector<Expression *> _actuals) {
@@ -761,3 +822,6 @@ Value *CallExpression::codegen(Execution_Context *ctx) {
 
 }
 
+CallExpression::~CallExpression() {
+  
+}

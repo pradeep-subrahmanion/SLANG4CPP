@@ -30,6 +30,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~BooleanConstant();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -48,6 +49,8 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    ~NumericConstant();
+
 };
 
 class StringLiteral: public Expression {
@@ -61,6 +64,7 @@ public:
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx);
+    ~StringLiteral();
 };
 
 class Variable: public Expression {
@@ -80,6 +84,7 @@ public:
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx);
+    ~Variable();
 };
 
 class BinaryPlus: public Expression {
@@ -93,6 +98,7 @@ public:
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx);
+    ~BinaryPlus();
 
 };
 
@@ -106,6 +112,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~BinaryMinus();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -121,9 +128,11 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~Mult();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+  
 };
 
 class Div: public Expression {
@@ -136,6 +145,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~Div();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -151,6 +161,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~UnaryPlus();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -166,6 +177,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~UnaryMinus();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -183,6 +195,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~RelationalExpression();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -199,6 +212,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~LogicalExpression();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
@@ -213,6 +227,7 @@ public:
     SymbolInfo *evaluate(Runtime_Context *ctx);
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
+    ~LogicalNot();
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx) {
     }
@@ -234,6 +249,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     TypeInfo get_type();
     Value *codegen(Execution_Context *ctx);
+    ~CallExpression();
     string evaluate_string(Execution_Context *ctx) {
     }
     ;

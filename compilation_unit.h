@@ -43,6 +43,7 @@ public:
     Function * codegen(Execution_Context *ctx);
     void update_return_value(Value * val);
     BasicBlock *exitblock();
+    ~Procedure();
 };
 
 class Tmodule: CompilationUnit {
@@ -54,6 +55,7 @@ public:
     SymbolInfo * execute(Runtime_Context *ctx, vector<SymbolInfo *> _actuals);
     TypeInfo typecheck(Compilation_Context *ctx);
     Value * codegen(Execution_Context *ctx);
+    ~Tmodule();
 };
 
 #endif
