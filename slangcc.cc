@@ -167,6 +167,7 @@ int main(int argc, char **argv) {
          mod->generate_js(rc);
 
          fclose(fd);
+         delete rc;
                  
       }
 
