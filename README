@@ -1,6 +1,8 @@
 SLANG (Simple LANGuage) was initially developed as a tool to teach compiler construction. At first , SLANG compiler (SLANG4.NET) was written in C# and used .NET reflection for backend code generation. SLANG has improved over the past few years and is now being used at production environments for evaluating business rules with the help of JavaScript backend. 
  
-This project rewrites SLANG Compiler in C++ and uses LLVM for backend code generation. SLANG4CPP enables SLANG programs to run native code on Linux , MAC OS X and Windows.   
+This project rewrites SLANG Compiler in C++ and uses LLVM for backend code generation. SLANG4CPP enables SLANG programs to run native code on Linux , MAC OS X and Windows.
+
+SLANG4CPP has a JavaScript backend which generates javascript equivalent of SLANG source.   
  
 SLANG4.NET  - http://slangfordotnet.codeplex.com/ 
  
@@ -20,7 +22,15 @@ This will generate 'slangcc' executable.
 RUN 
 ---
 
-slangcc <filename>
+slangcc has three modes . 
+
+1. JIT mode
+
+slangcc -i <filename>
+
+2. Compilation mode
+
+slangcc -c <filename>
 
 This will generate native executable from slang source.
 
@@ -30,4 +40,12 @@ eg :
 
 	slangcc test.sl
 	./test
+
+3. JavaScript mode
+
+slangcc -j <filename>
+
+This will generate JavaScript equivalent of SLANG code.
+
+
 

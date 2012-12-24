@@ -12,6 +12,7 @@ public:
     virtual SymbolInfo * execute(Runtime_Context *ctx,
                                  vector<SymbolInfo *> _actuals) = 0;
     virtual Value * codegen(Execution_Context *ctx) = 0;
+    virtual SymbolInfo *generate_js(Runtime_Context *ctx) = 0;
 };
 
 class Proc {
@@ -19,6 +20,7 @@ public:
     virtual SymbolInfo * execute(Runtime_Context *ctx,
                                  vector<SymbolInfo *> _actuals) = 0;
     virtual Function * codegen(Execution_Context *ctx) = 0;
+    virtual SymbolInfo *generate_js(Runtime_Context *ctx) = 0;
 };
 
 class Procedure: Proc {
@@ -44,6 +46,7 @@ public:
     void update_return_value(Value * val);
     BasicBlock *exitblock();
     ~Procedure();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 class Tmodule: CompilationUnit {
@@ -56,6 +59,7 @@ public:
     TypeInfo typecheck(Compilation_Context *ctx);
     Value * codegen(Execution_Context *ctx);
     ~Tmodule();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 #endif

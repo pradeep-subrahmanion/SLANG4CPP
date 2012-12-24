@@ -38,6 +38,13 @@ Value* PrintStatement::codegen(Execution_Context *ctx) {
     return NULL;
 
 }
+
+SymbolInfo * PrintStatement::generate_js(Runtime_Context *ctx) {
+    ctx->update_stream("console.log(");
+    exp->generate_js(ctx);
+    ctx->update_stream(");\n");
+}
+
 //PrintLine Statement
 
 PrintLineStatement::PrintLineStatement(Expression *_exp) {
@@ -69,6 +76,12 @@ Value* PrintLineStatement::codegen(Execution_Context *ctx) {
     return NULL;
 }
 
+SymbolInfo * PrintLineStatement::generate_js(Runtime_Context *ctx) {
+    ctx->update_stream("console.log(");
+    exp->generate_js(ctx);
+    ctx->update_stream(");\n");
+}
+
 // Variable Declaration
 
 VariableDeclStatement::VariableDeclStatement(SymbolInfo *_info) {
@@ -93,6 +106,13 @@ VariableDeclStatement::~VariableDeclStatement() {
   delete info;
   delete var;
 }
+
+SymbolInfo * VariableDeclStatement::generate_js(Runtime_Context *ctx) {
+    ctx->update_stream("var ");
+    ctx->update_stream(info->symbol_name);
+    ctx->update_stream(";\n");
+}
+
 
 // Assignment Statement
 
@@ -123,6 +143,14 @@ Value* AssignmentStatement::codegen(Execution_Context *ctx) {
 AssignmentStatement::~AssignmentStatement() {
   delete exp;
   delete var;
+}
+
+SymbolInfo * AssignmentStatement::generate_js(Runtime_Context *ctx) {
+
+    var->generate_js(ctx);
+    ctx->update_stream(" = ");
+    exp->generate_js(ctx);
+    ctx->update_stream(";\n");
 }
 
 //If Statement
@@ -254,6 +282,32 @@ IfStatement::~IfStatement() {
   delete condition;
 }
 
+SymbolInfo * IfStatement::generate_js(Runtime_Context *ctx) {
+
+    ctx->update_stream("if(");
+    condition->generate_js(ctx);
+    ctx->update_stream(")");
+    ctx->update_stream(" {\n");
+
+    for (int i = 0; i < if_statements.size(); ++i) {
+        Statement *st = if_statements.at(i);
+        st->generate_js(ctx);
+    }
+
+    ctx->update_stream(" }\n");
+
+    if(else_statements.size() > 0) {
+        ctx->update_stream("else {\n");
+        for (int i = 0; i < else_statements.size(); ++i) {
+            Statement *st = else_statements.at(i);
+            st->generate_js(ctx);
+        }
+        ctx->update_stream(" }\n");
+        
+    }
+    
+}
+
 // While Statement
 
 WhileStatement::WhileStatement(Expression *_exp, vector<Statement *> v) {
@@ -350,6 +404,23 @@ WhileStatement::~WhileStatement() {
   delete condition;
 }
 
+SymbolInfo * WhileStatement::generate_js(Runtime_Context *ctx) {
+
+    ctx->update_stream("while(");
+    condition->generate_js(ctx);
+
+    ctx->update_stream(")");
+    ctx->update_stream(" {\n");
+
+    for (int i = 0; i < statements.size(); ++i) {
+        Statement *st = statements.at(i);
+        st->generate_js(ctx);
+    }
+
+    ctx->update_stream(" }\n");
+
+}
+
 ReturnStatement::ReturnStatement(Expression *_exp) {
     stmt_type = StatementTypeReturn;
     exp = _exp;
@@ -371,6 +442,13 @@ ReturnStatement::~ReturnStatement() {
   delete info;
 }
 
+SymbolInfo * ReturnStatement::generate_js(Runtime_Context *ctx) {
+
+    ctx->update_stream("return ");
+    exp->generate_js(ctx);
+    ctx->update_stream(";\n");
+}
+
 CallStatement::CallStatement(Expression *_exp) {
     exp = _exp;
     stmt_type = StatementTypeCall;
@@ -386,5 +464,11 @@ Value* CallStatement::codegen(Execution_Context *ctx) {
 
 CallStatement::~CallStatement() {
   delete exp;
+}
+
+SymbolInfo * CallStatement::generate_js(Runtime_Context *ctx) {
+
+    exp->generate_js(ctx);
+    ctx->update_stream(";\n");
 }
 

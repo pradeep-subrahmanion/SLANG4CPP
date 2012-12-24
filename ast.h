@@ -19,6 +19,7 @@ public:
     virtual TypeInfo typecheck(Compilation_Context *ctx) = 0;
     virtual TypeInfo get_type() = 0;
     virtual string evaluate_string(Execution_Context *ctx)=0;
+    virtual SymbolInfo * generate_js(Runtime_Context *ctx) = 0;
 };
 
 class BooleanConstant: public Expression {
@@ -34,6 +35,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class NumericConstant: public Expression {
@@ -50,7 +52,7 @@ public:
     }
     ;
     ~NumericConstant();
-
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class StringLiteral: public Expression {
@@ -65,6 +67,7 @@ public:
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx);
     ~StringLiteral();
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class Variable: public Expression {
@@ -85,6 +88,7 @@ public:
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx);
     ~Variable();
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class BinaryPlus: public Expression {
@@ -99,7 +103,7 @@ public:
     Value *codegen(Execution_Context *ctx);
     string evaluate_string(Execution_Context *ctx);
     ~BinaryPlus();
-
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class BinaryMinus: public Expression {
@@ -116,6 +120,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class Mult: public Expression {
@@ -132,6 +137,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
   
 };
 
@@ -149,6 +155,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class UnaryPlus: public Expression {
@@ -165,6 +172,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class UnaryMinus: public Expression {
@@ -181,6 +189,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class RelationalExpression: public Expression {
@@ -199,6 +208,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class LogicalExpression: public Expression {
@@ -216,6 +226,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class LogicalNot: public Expression {
@@ -232,6 +243,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 };
 
 class CallExpression: public Expression {
@@ -253,6 +265,7 @@ public:
     string evaluate_string(Execution_Context *ctx) {
     }
     ;
+    SymbolInfo * generate_js(Runtime_Context *ctx);
 
 };
 

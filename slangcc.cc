@@ -5,7 +5,8 @@
 
 typedef enum{
    SlangCCModeCompile,
-   SlangCCModeJIT
+   SlangCCModeJIT,
+   SlangCCModeJavaScript
 }SlangCCMode;
 
 using namespace std;
@@ -16,11 +17,12 @@ static char *name;
 static SlangCCMode mode;
 
 void show_usage() {
+
    cout << "Usage : slangcc [Option] <filename>" <<"\n\n"
         << " -i  - JIT mode" <<"\n"
         << " -c  - Compile mode" <<"\n"
+        << " -j  - java script mode" <<"\n"
         << " -h  - help" <<"\n";
-
 }
 void parse_options(int argc , char **argv) {
 
@@ -41,6 +43,9 @@ void parse_options(int argc , char **argv) {
       }
       else if(strcmp(argv[1],"-c") == 0) {
          mode = SlangCCModeCompile;
+      }
+      else if(strcmp(argv[1],"-j") == 0) {
+         mode = SlangCCModeJavaScript;
       }
       else  {
          show_usage();
@@ -119,7 +124,7 @@ int main(int argc, char **argv) {
          delete rc;
          llvm_shutdown();
       }
-      else {
+      else if(mode == SlangCCModeCompile) {
 
          //generate top level code
          Execution_Context *rc = new Execution_Context();
@@ -148,6 +153,21 @@ int main(int argc, char **argv) {
          cmd = std::string("gcc ") +old_name + std::string(" -o ") + new_name;
          system(cmd.c_str());
 
+      }
+      else if(mode == SlangCCModeJavaScript) {
+         // javascript generation .
+         string fname = name_only + ".js";
+         FILE *fd = fopen(fname.c_str(),"w");
+         Runtime_Context *rc = new Runtime_Context();
+
+         //set up file descriptor
+         rc->setup_js_codegen(fd);
+
+         //start js codegen
+         mod->generate_js(rc);
+
+         fclose(fd);
+                 
       }
 
       delete p;

@@ -6,7 +6,7 @@ public:
     StatementType stmt_type;
     virtual SymbolInfo *execute(Runtime_Context *ctx) =0;
     virtual Value* codegen(Execution_Context *ctx)=0;
-
+    virtual SymbolInfo *generate_js(Runtime_Context *ctx) = 0;
 };
 
 class PrintStatement: public Statement {
@@ -18,6 +18,7 @@ public:
     ~PrintStatement();
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 
 };
 
@@ -30,6 +31,7 @@ public:
     ~PrintLineStatement();
     SymbolInfo * execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 class VariableDeclStatement: public Statement {
@@ -41,6 +43,7 @@ public:
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
     ~VariableDeclStatement();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 class AssignmentStatement: public Statement {
@@ -53,6 +56,7 @@ public:
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
     ~AssignmentStatement();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 class IfStatement: public Statement {
@@ -66,6 +70,7 @@ public:
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
     ~IfStatement();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 class WhileStatement: public Statement {
@@ -78,6 +83,7 @@ public:
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
     ~WhileStatement();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 
 };
 
@@ -90,6 +96,7 @@ public:
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
     ~ReturnStatement();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };
 
 class CallStatement: public Statement {
@@ -100,4 +107,5 @@ public:
     SymbolInfo *execute(Runtime_Context *ctx);
     Value* codegen(Execution_Context *ctx);
     ~CallStatement();
+    SymbolInfo *generate_js(Runtime_Context *ctx);
 };

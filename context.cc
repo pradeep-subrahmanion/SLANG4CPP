@@ -34,6 +34,13 @@ void Runtime_Context::add_symbol(SymbolInfo *info) {
 SymbolInfo * Runtime_Context::get_symbol(string name) {
 	return st->get(name);
 }
+void Runtime_Context::setup_js_codegen(FILE *fd) {
+    js_fd = fd;
+}
+
+void Runtime_Context::update_stream(string str) {
+    fwrite(str.c_str(),1,str.length(),js_fd);    
+}
 
 Runtime_Context::~Runtime_Context() {
   

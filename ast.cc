@@ -2,7 +2,7 @@
 #include "common.h"
 #include "context.h"
 #include "compilation_unit.h"
-
+#include <sstream>
 using namespace CodeGen;
 
 // Boolean Constant
@@ -26,6 +26,13 @@ TypeInfo BooleanConstant::get_type() {
 Value *BooleanConstant::codegen(Execution_Context *ctx) {
     int i = (info->bool_val == false) ? 0 : 1;
     return ConstantInt::get(getGlobalContext(), APInt(1, i));
+}
+
+
+SymbolInfo * BooleanConstant::generate_js(Runtime_Context *ctx)
+{
+    string str = (info->bool_val == false) ? "false" : "true";
+    ctx->update_stream(str);
 }
 
 BooleanConstant::~BooleanConstant() {
@@ -62,6 +69,18 @@ NumericConstant::~NumericConstant()
   delete info;
 }
 
+SymbolInfo * NumericConstant::generate_js(Runtime_Context *ctx)
+{
+    // convert double to string
+
+    std::ostringstream stream;
+    stream << info->double_val;
+    string str = stream.str();
+
+    ctx->update_stream(str);
+}
+
+
 // String Literal
 
 StringLiteral::StringLiteral(std::string _value) {
@@ -93,6 +112,12 @@ Value *StringLiteral::codegen(Execution_Context *ctx) {
 
 StringLiteral::~StringLiteral() {
   delete info;
+}
+
+SymbolInfo * StringLiteral::generate_js(Runtime_Context *ctx)
+{
+    string str = "'" + info->string_val + "'";
+    ctx->update_stream(str);  
 }
 
 //Variable
@@ -184,6 +209,13 @@ Value *Variable::codegen(Execution_Context *ctx) {
 Variable::~Variable() {
   delete info;
 }
+
+SymbolInfo * Variable::generate_js(Runtime_Context *ctx)
+{
+    string str = info->symbol_name;
+    ctx->update_stream(str);  
+}
+
 //Binary Plus
 
 BinaryPlus::BinaryPlus(Expression *e1, Expression *e2) {
@@ -262,6 +294,13 @@ BinaryPlus::~BinaryPlus() {
   delete exp2;
 }
 
+SymbolInfo * BinaryPlus::generate_js(Runtime_Context *ctx)
+{
+    exp1->generate_js(ctx);
+    ctx->update_stream("+");
+    exp2->generate_js(ctx);
+}
+
 //Binary Minus
 
 
@@ -309,6 +348,13 @@ Value *BinaryMinus::codegen(Execution_Context *ctx) {
 BinaryMinus::~BinaryMinus() {
   delete exp1;
   delete exp2;
+}
+
+SymbolInfo * BinaryMinus::generate_js(Runtime_Context *ctx)
+{
+    exp1->generate_js(ctx);
+    ctx->update_stream("-");
+    exp2->generate_js(ctx);
 }
 
 //Multiplication
@@ -360,6 +406,12 @@ Mult::~Mult() {
   delete exp2;
 }
 
+SymbolInfo * Mult::generate_js(Runtime_Context *ctx)
+{
+    exp1->generate_js(ctx);
+    ctx->update_stream("*");
+    exp2->generate_js(ctx);
+}
 //Division
 
 
@@ -409,6 +461,12 @@ Div::~Div() {
   delete exp2;
 }
 
+SymbolInfo * Div::generate_js(Runtime_Context *ctx)
+{
+    exp1->generate_js(ctx);
+    ctx->update_stream("/");
+    exp2->generate_js(ctx);
+}
 
 //UnaryPlus
 
@@ -461,6 +519,13 @@ UnaryPlus::~UnaryPlus() {
   delete exp1;
 }
 
+SymbolInfo * UnaryPlus::generate_js(Runtime_Context *ctx)
+{
+    ctx->update_stream("+");
+    exp1->generate_js(ctx);
+}
+
+
 //UnaryMinus
 
 UnaryMinus::UnaryMinus(Expression *e1) {
@@ -509,6 +574,13 @@ Value *UnaryMinus::codegen(Execution_Context *ctx) {
 
 UnaryMinus::~UnaryMinus() {
   delete exp1;
+}
+
+
+SymbolInfo * UnaryMinus::generate_js(Runtime_Context *ctx)
+{
+    ctx->update_stream("-");
+    exp1->generate_js(ctx);
 }
 
 // Relational Operator
@@ -654,6 +726,33 @@ RelationalExpression::~RelationalExpression() {
   delete exp1;
   delete exp2;
 }
+
+SymbolInfo * RelationalExpression::generate_js(Runtime_Context *ctx)
+{
+
+    exp1->generate_js(ctx);
+    if (optr == OPTR_EQUAL) {
+            ctx->update_stream("=");           
+    } 
+    else if (optr == OPTR_NEQUAL) {
+            ctx->update_stream("!=");           
+    }
+    else if (optr == OPTR_GREATER_THAN) {
+            ctx->update_stream(">");           
+    } 
+    else if (optr == OPTR_GREATER_EQUAL) {
+            ctx->update_stream(">=");           
+    } 
+    else if (optr == OPTR_LESS_THAN) {
+            ctx->update_stream("<");           
+    } 
+    else if (optr == OPTR_LESS_EQUAL) {
+            ctx->update_stream("<=");           
+    }
+
+   exp2->generate_js(ctx);
+}
+
 // Logical Operator
 
 LogicalExpression::LogicalExpression(Expression *e1, Expression *e2, Token _op) {
@@ -718,6 +817,20 @@ LogicalExpression::~LogicalExpression() {
   delete exp2;
 }
 
+SymbolInfo * LogicalExpression::generate_js(Runtime_Context *ctx)
+{
+
+    exp1->generate_js(ctx);
+    if (optr == TOKEN_AND) {
+        ctx->update_stream("&&");   
+    } 
+    else if (optr == TOKEN_OR) {
+        ctx->update_stream("||");   
+    }
+
+   exp2->generate_js(ctx);
+}
+
 // Logical NOT
 
 LogicalNot::LogicalNot(Expression *e1) {
@@ -758,6 +871,12 @@ Value *LogicalNot::codegen(Execution_Context *ctx) {
 
 LogicalNot::~LogicalNot() {
   delete exp;
+}
+
+SymbolInfo * LogicalNot::generate_js(Runtime_Context *ctx)
+{
+    ctx->update_stream("!");   
+    exp->generate_js(ctx);
 }
 
 CallExpression::CallExpression(Procedure *_proc, vector<Expression *> _actuals) {
@@ -811,7 +930,6 @@ TypeInfo CallExpression::get_type() {
 
 Value *CallExpression::codegen(Execution_Context *ctx) {
 
-
     std::vector<Value*> args;
     for (unsigned i = 0;i < actuals.size(); ++i) {
         args.push_back(actuals[i]->codegen(ctx));
@@ -824,4 +942,21 @@ Value *CallExpression::codegen(Execution_Context *ctx) {
 
 CallExpression::~CallExpression() {
   
+}
+
+SymbolInfo * CallExpression::generate_js(Runtime_Context *ctx)
+{
+    ctx->update_stream(procname);
+    ctx->update_stream("(");
+    
+    for (unsigned i = 0;i < actuals.size(); ++i) {
+        Expression *exp = actuals.at(i);
+        exp->generate_js(ctx);
+
+        if(i!=actuals.size()-1) {
+            ctx->update_stream(",");
+        }
+    }
+
+    ctx->update_stream(")");
 }

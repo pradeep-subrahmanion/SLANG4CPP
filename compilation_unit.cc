@@ -135,6 +135,30 @@ Procedure::~Procedure() {
   
 }
 
+SymbolInfo * Procedure::generate_js(Runtime_Context *ctx) {
+
+    string str  = "function " + name + "(";
+    ctx->update_stream(str);
+
+    for (unsigned i = 0;i < formals.size(); ++i) {
+        SymbolInfo *info = formals.at(i);
+        ctx->update_stream(info->symbol_name);
+
+        if(i!=formals.size()-1) {
+            ctx->update_stream(",");
+        }
+    }
+
+    ctx->update_stream(") { \n");
+
+    for(int i=0;i<statements.size();++i) {
+        Statement *st = statements.at(i);
+        st->generate_js(ctx);
+    }
+    ctx->update_stream("} \n");
+
+}
+
 Tmodule::Tmodule(vector<Procedure *> _procs) {
     procs = _procs;
 }
@@ -183,4 +207,12 @@ Value * Tmodule::codegen(Execution_Context *ctx) {
 
 Tmodule::~Tmodule() {
   
+}
+
+SymbolInfo * Tmodule::generate_js(Runtime_Context *ctx) {
+
+    for (int i = 0; i < procs.size(); ++i) {
+        Procedure *proc = procs.at(i);
+        proc->generate_js(ctx);
+    }
 }
