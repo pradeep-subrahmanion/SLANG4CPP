@@ -732,7 +732,7 @@ SymbolInfo * RelationalExpression::generate_js(Runtime_Context *ctx)
 
     exp1->generate_js(ctx);
     if (optr == OPTR_EQUAL) {
-            ctx->update_stream("=");           
+            ctx->update_stream("==");           
     } 
     else if (optr == OPTR_NEQUAL) {
             ctx->update_stream("!=");           
