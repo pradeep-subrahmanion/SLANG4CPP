@@ -40,7 +40,7 @@ Value* PrintStatement::codegen(Execution_Context *ctx) {
 }
 
 SymbolInfo * PrintStatement::generate_js(Runtime_Context *ctx) {
-    ctx->update_stream("console.log(");
+    ctx->update_stream("print(");
     exp->generate_js(ctx);
     ctx->update_stream(");\n");
 }
@@ -77,9 +77,9 @@ Value* PrintLineStatement::codegen(Execution_Context *ctx) {
 }
 
 SymbolInfo * PrintLineStatement::generate_js(Runtime_Context *ctx) {
-    ctx->update_stream("console.log(");
+    ctx->update_stream("print(");
     exp->generate_js(ctx);
-    ctx->update_stream(");\n");
+    ctx->update_stream("\n);\n");
 }
 
 // Variable Declaration

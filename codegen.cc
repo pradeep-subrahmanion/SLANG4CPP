@@ -1,5 +1,4 @@
 #include "codegen.h"
-
 namespace CodeGen {
 
 //

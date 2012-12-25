@@ -1,4 +1,5 @@
 function MAIN() { 
-    console.log('Hello World');
-    return true;
+print('Hello World');
+return true;
 } 
+MAIN()

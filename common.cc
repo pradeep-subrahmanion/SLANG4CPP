@@ -1,5 +1,6 @@
 #include "common.h"
-
+#include <sstream>
+#include <fstream>
 // quits process , shows error message
 
 void exit_with_message(const char *err_msg) {
@@ -26,4 +27,13 @@ RelationalOperator get_relation_operator(Token token) {
     }
 
     return OPTR_ILLEGAL;
+}
+
+// read contents of entire file into string
+
+string str_from_file(const char *path) {
+    std::ifstream s(path);
+    std::stringstream buffer;
+    buffer << s.rdbuf();
+    return buffer.str();
 }

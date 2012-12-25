@@ -168,6 +168,7 @@ public:
 
 // Some common functions
 
+string str_from_file(const char *path);
 void exit_with_message(const char *err_msg);
 RelationalOperator get_relation_operator(Token token);
 

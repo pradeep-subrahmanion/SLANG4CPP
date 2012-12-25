@@ -63,6 +63,10 @@ void emit_printline_stmt(Value *val, TypeInfo type);
 
 Value * emit_strcmp_stmt(Value *val1, Value *val2);
 
+// javascript codegen
+
+void run_js(string js);
+
 }
 
 #endif

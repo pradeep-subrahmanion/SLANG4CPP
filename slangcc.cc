@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "context.h"
 #include "builder.h"
+#include "js_run.h"
 
 typedef enum{
    SlangCCModeCompile,
@@ -114,7 +115,7 @@ int main(int argc, char **argv) {
 
          //start execution engine for JIT , run main function .
          ExecutionEngine* ee = EngineBuilder(module).create();
-         Function *proc = rc->get_procedure("main");
+         llvm::Function *proc = rc->get_procedure("main");
          std::vector<GenericValue> noargs;
          GenericValue gv = ee->runFunction(proc, noargs);
 
@@ -167,6 +168,10 @@ int main(int argc, char **argv) {
          mod->generate_js(rc);
 
          fclose(fd);
+
+         // run javascript using google v8 engine
+         JS_Run::run_js(fname.c_str());
+
          delete rc;
                  
       }

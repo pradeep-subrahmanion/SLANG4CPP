@@ -215,4 +215,6 @@ SymbolInfo * Tmodule::generate_js(Runtime_Context *ctx) {
         Procedure *proc = procs.at(i);
         proc->generate_js(ctx);
     }
+
+    ctx->update_stream("MAIN()");
 }

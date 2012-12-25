@@ -1,6 +1,6 @@
-all: codegen common context symboltable ast ast_statement lexer parser cunit builder
-	ar -rvs libslang.a ast.o ast_statement.o lexer.o parser.o codegen.o common.o context.o symboltable.o compilation_unit.o builder.o 
-	g++  slangcc.cc  -L $(PWD) -lslang  -o slangcc `llvm-config --libs core jit interpreter nativecodegen --cppflags` `llvm-config --ldflags`
+all: codegen jsrun common context symboltable ast ast_statement lexer parser cunit builder
+	ar -rvs libslang.a ast.o ast_statement.o lexer.o parser.o codegen.o common.o context.o symboltable.o compilation_unit.o builder.o js_run.o 
+	g++  slangcc.cc  -L $(PWD) -lslang -L $(PWD)/external/lib -lv8_base -lv8_snapshot -o slangcc `llvm-config --libs core jit interpreter nativecodegen --cppflags` `llvm-config --ldflags`
 builder:builder.cc
 	g++ -c builder.cc  -o builder.o `llvm-config --cxxflags`
 
@@ -30,6 +30,9 @@ parser:parser.cc
 
 lexer:lexer.cc
 	g++ -c lexer.cc -o lexer.o `llvm-config --cxxflags`
+
+jsrun:js_run.cc
+	g++ -c js_run.cc -o js_run.o `llvm-config --cxxflags`
 
 slangcc:slangcc.cc
 
