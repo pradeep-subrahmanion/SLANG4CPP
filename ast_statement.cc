@@ -79,7 +79,7 @@ Value* PrintLineStatement::codegen(Execution_Context *ctx) {
 SymbolInfo * PrintLineStatement::generate_js(Runtime_Context *ctx) {
     ctx->update_stream("print(");
     exp->generate_js(ctx);
-    ctx->update_stream("\n);\n");
+    ctx->update_stream(");\n");
 }
 
 // Variable Declaration

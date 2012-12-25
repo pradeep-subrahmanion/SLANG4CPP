@@ -10,8 +10,7 @@ function MAIN() {
 var D;
 D = 0;
 while(D<=10) {
-print(FIB(D)
-);
+print(FIB(D));
 D = D+1;
  }
 } 
